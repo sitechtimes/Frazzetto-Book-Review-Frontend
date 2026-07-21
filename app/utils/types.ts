@@ -3,7 +3,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  userType: "teacher" | "user";
+  userType: "student" | "teacher";
 }
 
 export interface Student extends User {

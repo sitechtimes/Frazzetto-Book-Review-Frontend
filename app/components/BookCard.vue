@@ -1,11 +1,10 @@
 <template>
     <div class="group flex flex-col transition-transform duration-200 hover:-translate-y-1">
-        <RouterLink :to="`/books/${book.id}`" class="block">
-            <div class="aspect-2/3 w-full overflow-hidden bg-base-200">
-                <img :src="book.coverImage" :alt="book.title"
-                    class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" />
-            </div>
-        </RouterLink>
+        <div class="aspect-2/3 w-full overflow-hidden bg-base-200">
+            <img :src="book.coverImage" :alt="book.title"
+                class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" />
+        </div>
+
 
         <div class="mt-4 space-y-2">
 

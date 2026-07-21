@@ -4,7 +4,7 @@ export const students: Student[] = [
     email: "student@test.com",
     firstName: "John",
     lastName: "Smith",
-    userType: "user",
+    userType: "student",
 
     reviews: [
       {

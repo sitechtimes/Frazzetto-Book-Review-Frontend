@@ -7,7 +7,6 @@
                 </h2>
 
                 <div v-if="showBookInfo" class="mt-2">
-
                     <p class="text-lg text-gray-700">
                         {{ book.title }}
                     </p>
@@ -38,18 +37,31 @@
             </div>
         </div>
 
-        <p class="text-gray-700 text-lg leading-relaxed mt-6">
-            {{ review.text }}
-        </p>
+        <div class="mt-6">
+            <button v-if="review.spoiler && !showSpoiler"
+                class="w-full text-left bg-gray-200 rounded-md p-5 text-gray-700 hover:bg-gray-300 transition"
+                @click="showSpoiler = true">
 
-        <p v-if="review.spoiler" class="text-red-600 text-sm font-medium mt-5">
-            ⚠ Contains spoilers
-        </p>
+                <p class="font-semibold">
+                    ⚠ This review contains spoilers
+                </p>
+
+                <p class="text-sm mt-1">
+                    Click to reveal review
+                </p>
+            </button>
+
+            <p v-else class="text-gray-700 text-lg leading-relaxed">
+                {{ review.text }}
+            </p>
+
+        </div>
 
         <div v-if="showActions" class="flex justify-end gap-4 mt-6">
             <button class="btn bg-white border border-gray-300 text-gray-800 px-8" @click="emit('edit', review)">
                 Edit
             </button>
+
 
             <button class="btn bg-red-600 text-white px-8 hover:bg-red-700" @click="emit('delete', review.id)">
                 Delete
@@ -58,9 +70,8 @@
     </div>
 </template>
 
-
 <script setup lang="ts">
-withDefaults(
+const props = withDefaults(
     defineProps<{
         book: Book;
         review: Review;
@@ -78,10 +89,13 @@ const emit = defineEmits<{
     delete: [id: number];
 }>();
 
+const showSpoiler = ref(false);
+
 function formatDate(date: string) {
     if (!date) {
         return "";
     }
+
     return new Date(date).toLocaleDateString(
         "en-US",
         {

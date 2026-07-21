@@ -1,13 +1,11 @@
 <template>
-    <div>
-        <TeacherNavBar />
-        <slot></slot>
-        <AppFooter />
+    <div class="min-h-screen bg-base-200">
+
+        <TeacherNavbar />
+
+        <main>
+            <slot />
+        </main>
+
     </div>
 </template>
-
-<script setup lang="ts">
-
-</script>
-
-<style scoped></style>

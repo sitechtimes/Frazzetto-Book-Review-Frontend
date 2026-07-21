@@ -48,8 +48,26 @@ const currentUser: User = {
     email: "teacher@test.com",
     firstName: "John",
     lastName: "Smith",
-    userType: "teacher",
+    userType: "student",
 };
+
+
+definePageMeta({
+    layout: false
+});
+
+
+const layout = computed(() => {
+
+    return currentUser.userType === "teacher"
+        ? "teacher"
+        : "student";
+
+});
+
+
+setPageLayout(layout.value);
+
 
 const search = ref("");
 const sortOption = ref("");
@@ -69,23 +87,48 @@ const genres = [
     "Mystery",
     "Historical",
     "Romance",
-    "SciFi",
+    "Science Fiction",
 ];
 
 const filteredBooks = computed(() => {
     let result = books.filter((book) => {
 
+        const searchText = search.value.toLowerCase();
+
         const matchesSearch =
             book.title
                 .toLowerCase()
-                .includes(search.value.toLowerCase()) ||
+                .includes(searchText) ||
 
             book.author
                 .toLowerCase()
-                .includes(search.value.toLowerCase());
+                .includes(searchText);
 
-        return matchesSearch;
+        const matchesGenre =
+            selectedGenres.value.length === 0 ||
+
+            selectedGenres.value.some((genre) =>
+                book.genre.includes(genre)
+            );
+
+        return matchesSearch && matchesGenre;
     });
+
+    if (sortOption.value === "title") {
+
+        result.sort((a, b) =>
+            a.title.localeCompare(b.title)
+        );
+
+    }
+
+    if (sortOption.value === "rating") {
+
+        result.sort((a, b) =>
+            b.averageRating - a.averageRating
+        );
+
+    }
 
     return result;
 });
