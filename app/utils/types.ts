@@ -27,8 +27,12 @@ export interface Review {
   userId: number;
   rating: number;
   headline: string;
+  text: string;
   isApproved: boolean;
   spoiler: boolean;
+  createdAt: string;
+  approvedAt: string | null;
+  updatedAt: string | null;
 }
 
 export interface Course {

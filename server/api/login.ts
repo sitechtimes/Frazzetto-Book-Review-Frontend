@@ -1,6 +1,6 @@
 interface LoginBody {
   email: string;
-  pin: string;
+  pin: number;
 }
 
 interface LoginResponse {
@@ -15,7 +15,7 @@ const users = [
   {
     id: 1,
     email: "admin@gmail.com",
-    pin: "uoyg57",
+    pin: 435658,
     firstName: "John",
     lastName: "Doe",
     userType: "teacher" as const,
@@ -23,7 +23,7 @@ const users = [
   {
     id: 2,
     email: "user@gmail.com",
-    pin: "sd3645",
+    pin: 861851,
     firstName: "Tina",
     lastName: "Zhen",
     userType: "user" as const,

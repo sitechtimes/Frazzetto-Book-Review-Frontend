@@ -56,7 +56,6 @@
                 </span>
 
             </div>
-
         </div>
     </div>
 </template>
@@ -66,7 +65,6 @@
 const props = defineProps<{
     book: Book
 }>()
-
 
 const stars = computed(() => {
     const rating = props.book.averageRating
@@ -81,9 +79,7 @@ const stars = computed(() => {
     })
 })
 
-
 const MAX_DESCRIPTION_LENGTH = 50
-
 
 const shortDescription = computed(() => {
     if (props.book.description.length <= MAX_DESCRIPTION_LENGTH) {

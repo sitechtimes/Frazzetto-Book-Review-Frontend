@@ -11,7 +11,7 @@
 
                 <div>
                     <label for="pin" class="mb-1 block font-medium">Enter your pin:</label>
-                    <input v-model="loginForm.pin" type="password" placeholder="••••••••"
+                    <input v-model.number="loginForm.pin" type="password" placeholder="••••••••"
                         class="input input-bordered bg-base-100 w-full" />
                 </div>
 
@@ -30,7 +30,7 @@ const router = useRouter();
 
 const loginForm = reactive({
     email: "",
-    pin: ""
+    pin: null as number | null,
 });
 
 watch(

@@ -7,7 +7,7 @@ export const useUserStore = defineStore("userStore", () => {
 
   async function signIn(
     email: string,
-    pin: string,
+    pin: number,
   ): Promise<Error | undefined> {
     const { data, error } = await tryRequestEndpoint<User>("/login", "POST", {
       email,
