@@ -25,7 +25,7 @@
         }"
         @click="selectStudent(student.id)"
       >
-        {{ student.name }}
+        {{ student.firstName }} {{ student.lastName }}
       </button>
     </div>
   </aside>
@@ -33,10 +33,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  students: {
-    id: number;
-    name: string;
-  }[];
+  students: Student[];
   title?: string;
 }>();
 

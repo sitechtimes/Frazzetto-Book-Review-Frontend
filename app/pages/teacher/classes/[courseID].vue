@@ -22,7 +22,14 @@
           <div class="p-6">
             <div class="flex justify-between mb-6">
               <h2 class="text-xl font-semibold">Reviews</h2>
-              <span> Selected: All </span>
+              <span>
+                Selected:
+                {{
+                  selectedStudent
+                    ? `${selectedStudent.firstName} ${selectedStudent.lastName}`
+                    : "All"
+                }}
+              </span>
             </div>
 
             <div class="mb-10">
@@ -31,7 +38,7 @@
                 <hr class="flex-1 border-gray-300" />
               </div>
               <TeacherApprovalCard
-                v-for="review in pendingReviews"
+                v-for="review in filteredPendingReviews"
                 :key="review.id"
                 :review="review"
                 :show-actions="true"
@@ -46,7 +53,7 @@
                 <hr class="flex-1 border-gray-300" />
               </div>
               <TeacherApprovalCard
-                v-for="review in approvedReviews"
+                v-for="review in filteredApprovedReviews"
                 :key="review.id"
                 :review="review"
               />
@@ -59,6 +66,7 @@
 </template>
 
 <script setup lang="ts">
+// emit from sidebar to get selected and replace "Selected: All" w/ the selected student name
 const route = useRoute();
 
 const courseID = route.params.courseID;
@@ -67,27 +75,26 @@ const courseID = route.params.courseID;
 const courses = [
   {
     id: 1,
-    name: "Class 1",
+    name: "AP English Literature",
     classPeriod: 3,
-    students: [
-      {
-        id: 1,
-        name: "Student 1",
-      },
-      {
-        id: 2,
-        name: "Student 2",
-      },
-      {
-        id: 3,
-        name: "Student 3",
-      },
-    ],
+    students: students,
   },
 ];
 
 const course = courses.find((course) => course.id.toString() === courseID);
 
+const selectedStudentId = ref<number | null>(null);
+const selectedStudent = computed(() => {
+  if (!selectedStudentId.value || !course) {
+    return null;
+  }
+
+  return course.students.find(
+    (student) => student.id === selectedStudentId.value,
+  );
+});
+
+// have to get the reviews from the course students
 const pendingReviews = [
   {
     id: 1,
@@ -110,8 +117,8 @@ const approvedReviews = [
     bookId: 2,
     userId: 2,
     rating: 1,
-    headline: "This book is so good",
-    text: "u should read this book",
+    headline: "This book is terrible",
+    text: "Never reading this again. would not recommend",
     isApproved: true,
     spoiler: true,
     createdAt: "01/31/2026",
@@ -120,20 +127,37 @@ const approvedReviews = [
   },
 ];
 
+const filteredPendingReviews = computed(() => {
+  if (!selectedStudentId.value) {
+    return pendingReviews;
+  }
+
+  return pendingReviews.filter(
+    (review) => review.userId === selectedStudentId.value,
+  );
+});
+const filteredApprovedReviews = computed(() => {
+  if (!selectedStudentId.value) {
+    return approvedReviews;
+  }
+
+  return approvedReviews.filter(
+    (review) => review.userId === selectedStudentId.value,
+  );
+});
+
 function approveReview(id: number) {
   console.log("approve", id);
+  //backend
 }
 
 function rejectReview(id: number) {
   console.log("reject", id);
+  //backend
 }
 
 function selectStudent(studentId: number | null) {
-  if (studentId === null) {
-    console.log("Showing all students");
-  } else {
-    console.log("Selected student:", studentId);
-  }
+  selectedStudentId.value = studentId;
 }
 </script>
 
