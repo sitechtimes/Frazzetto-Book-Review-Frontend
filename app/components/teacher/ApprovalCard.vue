@@ -9,17 +9,10 @@
       </div>
       <div class="text-right">
         <div class="flex">
-          <span
-            v-for="(percentage, index) in stars"
-            :key="index"
-            class="relative inline-block text-lg leading-none"
-          >
+          <span v-for="(percentage, index) in stars" :key="index" class="relative inline-block text-lg leading-none">
             <span class="text-gray-300"> ★ </span>
 
-            <span
-              class="absolute left-0 top-0 overflow-hidden text-black"
-              :style="{ width: `${percentage}%` }"
-            >
+            <span class="absolute left-0 top-0 overflow-hidden text-black" :style="{ width: `${percentage}%` }">
               ★
             </span>
           </span>
@@ -33,16 +26,12 @@
     </p>
 
     <div v-if="showActions" class="flex justify-end gap-2 mt-6">
-      <button
-        class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
-        @click="$emit('reject', review.id)"
-      >
+      <button class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
+        @click="$emit('reject', review.id)">
         Reject
       </button>
-      <button
-        class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
-        @click="$emit('approve', review.id)"
-      >
+      <button class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
+        @click="$emit('approve', review.id)">
         Approve
       </button>
     </div>
@@ -71,14 +60,14 @@ const stars = computed(() => {
 });
 
 //fetch book w/ id? :
-const book = books[props.review.bookId - 1]; // this has to be fixed later bc ids may not be in order
+const book = books[props.review.bookId - 1]!; // this has to be fixed later bc ids may not be in order
 const title = book.title;
 const author = book.author;
 
 const studentName =
-  students[props.review.userId - 1].firstName +
+  students[props.review.userId - 1]!.firstName +
   " " +
-  students[props.review.userId - 1].lastName; //this also has to be fixed later
+  students[props.review.userId - 1]!.lastName; //this also has to be fixed later
 </script>
 
 <style scoped></style>

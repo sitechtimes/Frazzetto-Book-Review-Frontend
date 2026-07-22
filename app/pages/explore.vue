@@ -43,13 +43,8 @@
 </template>
 
 <script setup lang="ts">
-const currentUser: User = {
-    id: 1,
-    email: "teacher@test.com",
-    firstName: "John",
-    lastName: "Smith",
-    userType: "student",
-};
+// mock user from user.ts --> change between student and teacher to test different ends of the site
+const currentUser = teachers[0]!
 
 definePageMeta({
     layout: false

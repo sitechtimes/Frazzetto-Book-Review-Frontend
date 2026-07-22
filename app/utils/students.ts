@@ -39,12 +39,13 @@ export const students: Student[] = [
         updatedAt: null,
       },
     ],
-  }, {
+  },
+  {
     id: 2,
     email: "student@test.com",
     firstName: "Jane",
     lastName: "Smith",
-    userType: "user",
+    userType: "student",
 
     reviews: [
       {
@@ -79,5 +80,15 @@ export const students: Student[] = [
         updatedAt: null,
       },
     ],
-  }
+  },
+];
+
+export const teachers: User[] = [
+  {
+    id: 1,
+    email: "teacher@test.com",
+    firstName: "Dr. Smith",
+    lastName: "Smith",
+    userType: "teacher",
+  },
 ];

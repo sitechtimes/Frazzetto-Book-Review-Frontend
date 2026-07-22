@@ -5,17 +5,17 @@
         My Classes
       </h1>
       <div class="space-y-10">
-        <TeacherClassCard
-          v-for="course in classes"
-          :key="course.id"
-          :course="course"
-        />
+        <TeacherClassCard v-for="course in classes" :key="course.id" :course="course" />
       </div>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: "teacher",
+});
+
 const classes: Course[] = [
   {
     id: 1,

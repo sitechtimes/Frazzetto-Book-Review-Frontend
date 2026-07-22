@@ -12,11 +12,7 @@
       </div>
 
       <div class="flex gap-8">
-        <TeacherSideBar
-          :students="course?.students ?? []"
-          title="Students"
-          @select="selectStudent"
-        />
+        <TeacherSideBar :students="course?.students ?? []" title="Students" @select="selectStudent" />
 
         <section class="flex-1">
           <div class="p-6">
@@ -37,14 +33,8 @@
                 <h3 class="text-gray-700">Pending</h3>
                 <hr class="flex-1 border-gray-300" />
               </div>
-              <TeacherApprovalCard
-                v-for="review in filteredPendingReviews"
-                :key="review.id"
-                :review="review"
-                :show-actions="true"
-                @approve="approveReview"
-                @reject="rejectReview"
-              />
+              <TeacherApprovalCard v-for="review in filteredPendingReviews" :key="review.id" :review="review"
+                :show-actions="true" @approve="approveReview" @reject="rejectReview" />
             </div>
 
             <div>
@@ -52,11 +42,7 @@
                 <h3 class="text-gray-700">Approved</h3>
                 <hr class="flex-1 border-gray-300" />
               </div>
-              <TeacherApprovalCard
-                v-for="review in filteredApprovedReviews"
-                :key="review.id"
-                :review="review"
-              />
+              <TeacherApprovalCard v-for="review in filteredApprovedReviews" :key="review.id" :review="review" />
             </div>
           </div>
         </section>
@@ -66,6 +52,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: "teacher",
+});
+
 // emit from sidebar to get selected and replace "Selected: All" w/ the selected student name
 const route = useRoute();
 

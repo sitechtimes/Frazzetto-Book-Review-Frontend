@@ -18,7 +18,7 @@ definePageMeta({
     layout: "student"
 });
 
-const currentUserId = 1;
+const currentUserId = students[0]!.id;
 
 const student = computed(() => {
     return students.find(

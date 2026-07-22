@@ -103,6 +103,21 @@
 </template>
 
 <script setup lang="ts">
+// mock user from user.ts --> change between student and teacher to test different ends of the site
+const currentUser = students[0]!;
+
+definePageMeta({
+    layout: false
+});
+
+const layout = computed(() => {
+    return currentUser.userType === "teacher"
+        ? "teacher"
+        : "student";
+});
+
+setPageLayout(layout.value);
+
 const route = useRoute();
 
 const book = computed(() => {
