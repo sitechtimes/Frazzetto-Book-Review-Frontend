@@ -51,23 +51,17 @@ const currentUser: User = {
     userType: "student",
 };
 
-
 definePageMeta({
     layout: false
 });
 
-
 const layout = computed(() => {
-
     return currentUser.userType === "teacher"
         ? "teacher"
         : "student";
-
 });
 
-
 setPageLayout(layout.value);
-
 
 const search = ref("");
 const sortOption = ref("");

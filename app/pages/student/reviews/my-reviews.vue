@@ -9,12 +9,15 @@
                 <ReviewCard v-for="review in student.reviews" :key="review.id" :review="review"
                     :book="getBook(review.bookId)" :show-actions="true" @edit="editReview" @delete="deleteReview" />
             </div>
-
         </section>
     </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+    layout: "student"
+});
+
 const currentUserId = 1;
 
 const student = computed(() => {
