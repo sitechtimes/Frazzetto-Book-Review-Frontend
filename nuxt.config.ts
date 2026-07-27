@@ -6,13 +6,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@pinia/nuxt"],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
   css: ["~/assets/main.css"],
   runtimeConfig: {
     public: {
       backend: "",
-      event: ""
-    }
-  }
+    },
+  },
 });

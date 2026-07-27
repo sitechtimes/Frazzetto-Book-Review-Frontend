@@ -1,9 +1,10 @@
 export interface User {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
-  userType: "student" | "teacher";
+  first_name: string;
+  last_name: string;
+  is_student: boolean;
+  is_teacher: boolean;
 }
 
 export interface Student extends User {
@@ -16,9 +17,9 @@ export interface Book {
   author: string;
   genre: string[];
   description: string;
-  coverImage: string;
+  cover_image: string;
   reviews: Review[];
-  averageRating: number;
+  average_rating: number;
 }
 
 export interface Review {
