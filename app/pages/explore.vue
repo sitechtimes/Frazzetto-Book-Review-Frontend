@@ -1,62 +1,79 @@
 <template>
-    <div class="min-h-screen bg-base-200">
-        <main class="max-w-7xl mx-auto px-6 py-12">
-            <h1 class="text-4xl font-bold text-center mb-10">Explore Books</h1>
+  <div class="min-h-screen bg-base-200">
+    <main class="max-w-7xl mx-auto px-6 py-12">
+      <h1 class="text-4xl font-bold text-center mb-10">Explore Books</h1>
 
-            <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-16">
-                <div class="relative w-full max-w-md">
-                    <input v-model="search" type="text" placeholder="Search books by title or author..."
-                        class="input input-bordered w-full" />
-                </div>
+      <div
+        class="flex flex-col md:flex-row items-center justify-center gap-4 mb-16"
+      >
+        <div class="relative w-full max-w-md">
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Search books by title or author..."
+            class="input input-bordered w-full"
+          />
+        </div>
 
-                <select v-model="sortOption" class="select select-bordered">
-                    <option value="">Sort by:</option>
+        <select v-model="sortOption" class="select select-bordered">
+          <option value="">Sort by:</option>
 
-                    <option value="title">Alphabetical</option>
+          <option value="title">Alphabetical</option>
 
-                    <option value="rating">Highest Rated</option>
-                </select>
+          <option value="rating">Highest Rated</option>
+        </select>
 
-                <button class="btn btn-outline" @click="showGenres = !showGenres">
-                    Genres ▾
-                </button>
-            </div>
+        <button class="btn btn-outline" @click="showGenres = !showGenres">
+          Genres ▾
+        </button>
+      </div>
 
-            <div v-if="showGenres" class="flex flex-wrap justify-center gap-3 mb-10">
-                <label v-for="genre in genres" :key="genre" class="flex items-center gap-2 text-sm">
-                    <input type="checkbox" class="checkbox checkbox-sm" :value="genre" v-model="selectedGenres" />
+      <div v-if="showGenres" class="flex flex-wrap justify-center gap-3 mb-10">
+        <label
+          v-for="genre in genres"
+          :key="genre"
+          class="flex items-center gap-2 text-sm"
+        >
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm"
+            :value="genre"
+            v-model="selectedGenres"
+          />
 
-                    {{ genre }}
-                </label>
-            </div>
+          {{ genre }}
+        </label>
+      </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-14">
-                <BookCard v-for="book in filteredBooks" :key="book.id" :book="book" />
-            </div>
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-14"
+      >
+        <BookCard v-for="book in filteredBooks" :key="book.id" :book="book" />
+      </div>
 
-            <RouterLink v-if="currentUser.userType === 'teacher'" to="/books/add"
-                class="fixed bottom-10 right-10 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl hover:bg-gray-100 transition">
-                <span class="text-5xl leading-none -translate-y-1">+</span>
-            </RouterLink>
-        </main>
-    </div>
+      <NuxtLink
+        v-if="currentUser?.userType === 'teacher'"
+        to="/books/add"
+        class="fixed bottom-10 right-10 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl hover:bg-gray-100 transition"
+      >
+        <span class="text-5xl leading-none -translate-y-1">+</span>
+      </NuxtLink>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-// mock user from user.ts --> change between student and teacher to test different ends of the site
-const currentUser = teachers[0]!
-
 definePageMeta({
-    layout: false
+  layout: "default",
 });
 
-const layout = computed(() => {
-    return currentUser.userType === "teacher"
-        ? "teacher"
-        : "student";
-});
-
-setPageLayout(layout.value);
+const store = useUserStore();
+const currentUser = store.user;
+if (currentUser?.userType === "teacher") {
+  setPageLayout("teacher");
+} else if (currentUser?.userType === "student") {
+  setPageLayout("student");
+}
 
 const search = ref("");
 const sortOption = ref("");
@@ -65,60 +82,43 @@ const showGenres = ref(false);
 const selectedGenres = ref<string[]>([]);
 
 const genres = [
-    "Fiction",
-    "Nonfiction",
-    "Adult",
-    "Young Adult",
-    "Biography",
-    "Classics",
-    "Fantasy",
-    "Adventure",
-    "Mystery",
-    "Historical",
-    "Romance",
-    "Science Fiction",
+  "Fiction",
+  "Nonfiction",
+  "Adult",
+  "Young Adult",
+  "Biography",
+  "Classics",
+  "Fantasy",
+  "Adventure",
+  "Mystery",
+  "Historical",
+  "Romance",
+  "Science Fiction",
 ];
 
 const filteredBooks = computed(() => {
-    let result = books.filter((book) => {
+  let result = books.filter((book) => {
+    const searchText = search.value.toLowerCase();
 
-        const searchText = search.value.toLowerCase();
+    const matchesSearch =
+      book.title.toLowerCase().includes(searchText) ||
+      book.author.toLowerCase().includes(searchText);
 
-        const matchesSearch =
-            book.title
-                .toLowerCase()
-                .includes(searchText) ||
+    const matchesGenre =
+      selectedGenres.value.length === 0 ||
+      selectedGenres.value.some((genre) => book.genre.includes(genre));
 
-            book.author
-                .toLowerCase()
-                .includes(searchText);
+    return matchesSearch && matchesGenre;
+  });
 
-        const matchesGenre =
-            selectedGenres.value.length === 0 ||
+  if (sortOption.value === "title") {
+    result.sort((a, b) => a.title.localeCompare(b.title));
+  }
 
-            selectedGenres.value.some((genre) =>
-                book.genre.includes(genre)
-            );
+  if (sortOption.value === "rating") {
+    result.sort((a, b) => b.averageRating - a.averageRating);
+  }
 
-        return matchesSearch && matchesGenre;
-    });
-
-    if (sortOption.value === "title") {
-
-        result.sort((a, b) =>
-            a.title.localeCompare(b.title)
-        );
-
-    }
-
-    if (sortOption.value === "rating") {
-
-        result.sort((a, b) =>
-            b.averageRating - a.averageRating
-        );
-
-    }
-
-    return result;
+  return result;
 });
 </script>

@@ -8,7 +8,7 @@ interface LoginResponse {
   email: string;
   firstName: string;
   lastName: string;
-  userType: "teacher" | "user";
+  userType: "teacher" | "student";
 }
 
 const users = [
@@ -26,7 +26,7 @@ const users = [
     pin: 861851,
     firstName: "Tina",
     lastName: "Zhen",
-    userType: "user" as const,
+    userType: "student" as const,
   },
 ];
 
