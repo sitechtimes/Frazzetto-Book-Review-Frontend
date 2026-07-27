@@ -20,11 +20,27 @@ export const useUserStore = defineStore("userStore", () => {
     user.value = data;
     isAuth.value = true
   }
+
+async function init() {
+  const { data, error } = await tryRequestEndpoint<User>("/me", "GET");
+
+  if (error) {
+    signOut();
+    return;
+  }
+
+  user.value = data;
+  isAuth.value = true;
+}
+
+
   return {
     user,
     isAuth,
     userType,
     signOut,
     signIn,
+    init
   };
-});
+}, 
+{persist: true});
