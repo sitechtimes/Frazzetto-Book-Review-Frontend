@@ -24,6 +24,7 @@
 definePageMeta({
   requiresAuth: true,
   redirectIfAuth: false,
+  middleware: "role-check",
   allowedRoles: ["student"],
 });
 

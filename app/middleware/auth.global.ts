@@ -2,10 +2,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const nuxtApp = useNuxtApp();
   const userStore = useUserStore();
 
-  if (!userStore.isAuth) {
-  await userStore.init();
-} // this needs backend to check for existing session so that it saves user data when refreshed
-
   const getHomeRoute = () =>
     userStore.user?.userType === "teacher" ? "/teacher/classes" : "/student/homepage";
 

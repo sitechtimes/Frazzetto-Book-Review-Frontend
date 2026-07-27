@@ -9,6 +9,7 @@ definePageMeta({
   layout: "student",
   requiresAuth: true,
   redirectIfAuth: false,
+  middleware: "role-check",
   allowedRoles: ["student"],
 });
 </script>

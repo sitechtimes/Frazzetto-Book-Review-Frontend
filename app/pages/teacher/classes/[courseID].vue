@@ -70,6 +70,7 @@ definePageMeta({
   layout: "teacher",
   requiresAuth: true,
   redirectIfAuth: false,
+  middleware: "role-check",
   allowedRoles: ["teacher"],
 });
 

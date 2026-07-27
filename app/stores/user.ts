@@ -21,26 +21,12 @@ export const useUserStore = defineStore("userStore", () => {
     isAuth.value = true
   }
 
-async function init() {
-  const { data, error } = await tryRequestEndpoint<User>("/me", "GET");
-
-  if (error) {
-    signOut();
-    return;
-  }
-
-  user.value = data;
-  isAuth.value = true;
-}
-
-
   return {
     user,
     isAuth,
     userType,
     signOut,
     signIn,
-    init
   };
 }, 
-{persist: true});
+{persist: true}); // THIS IS TEMPORARY, needs backend for checking for session/cookies/idk so user data is saved on reload
