@@ -1,12 +1,15 @@
 <template>
-    <div>
-        <h1>Student Homepage</h1>
-    </div>
+  <div>
+    <h1>Student Homepage</h1>
+  </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-    layout: "student"
+  layout: "student",
+  requiresAuth: true,
+  redirectIfAuth: false,
+  allowedRoles: ["student"],
 });
 </script>
 

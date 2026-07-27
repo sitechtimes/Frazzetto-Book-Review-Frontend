@@ -105,6 +105,12 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: true,
+  redirectIfAuth: false,
+  allowedRoles: ["teacher"],
+});
+
 const coverPreview = ref("");
 
 const book = ref({

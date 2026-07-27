@@ -113,6 +113,8 @@ const currentUser = students[0]!;
 
 definePageMeta({
   layout: false,
+  requiresAuth: true,
+  redirectIfAuth: false,
 });
 
 const layout = computed(() => {

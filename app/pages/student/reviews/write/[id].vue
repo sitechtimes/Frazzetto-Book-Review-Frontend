@@ -21,6 +21,12 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: true,
+  redirectIfAuth: false,
+  allowedRoles: ["student"],
+});
+
 const route = useRoute();
 const router = useRouter();
 

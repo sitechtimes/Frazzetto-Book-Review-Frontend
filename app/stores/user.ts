@@ -1,8 +1,11 @@
 export const useUserStore = defineStore("userStore", () => {
   const user = ref<User>();
+  const isAuth = ref(false)
+  const userType = computed(() => user.value?.userType);
 
   function signOut() {
     user.value = undefined;
+    isAuth.value = false
   }
 
   async function signIn(
@@ -15,9 +18,12 @@ export const useUserStore = defineStore("userStore", () => {
     });
     if (error) return error;
     user.value = data;
+    isAuth.value = true
   }
   return {
     user,
+    isAuth,
+    userType,
     signOut,
     signIn,
   };

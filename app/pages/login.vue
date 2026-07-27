@@ -41,6 +41,11 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  requiresAuth: false,
+  redirectIfAuth: true,
+});
+
 const errorMessage = ref("");
 const store = useUserStore();
 const router = useRouter();

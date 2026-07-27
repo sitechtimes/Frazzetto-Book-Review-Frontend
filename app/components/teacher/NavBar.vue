@@ -38,7 +38,7 @@ const store = useUserStore();
 const router = useRouter();
 
 async function handleLogout() {
-  await store.signOut();
+  store.signOut();
   router.push("/login");
 }
 </script>
