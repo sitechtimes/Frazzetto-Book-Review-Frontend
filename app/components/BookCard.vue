@@ -1,23 +1,12 @@
 <template>
-  <div
-    class="group flex flex-col transition-transform duration-200 hover:-translate-y-1"
-  >
-    <NuxtLink
-      :to="`/books/${book.id}`"
-      class="aspect-2/3 w-full overflow-hidden bg-base-200"
-    >
-      <img
-        :src="book.coverImage"
-        :alt="book.title"
-        class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-      />
+  <div class="group flex flex-col transition-transform duration-200 hover:-translate-y-1">
+    <NuxtLink :to="`/books/${book.id}`" class="aspect-2/3 w-full overflow-hidden bg-base-200">
+      <img :src="book.coverImage" :alt="book.title"
+        class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" />
     </NuxtLink>
 
     <div class="mt-4 space-y-2">
-      <NuxtLink
-        :to="`/books/${book.id}`"
-        class="font-semibold text-base leading-tight hover:underline"
-      >
+      <NuxtLink :to="`/books/${book.id}`" class="font-semibold text-base leading-tight hover:underline">
         {{ book.title }}
       </NuxtLink>
 
@@ -26,11 +15,7 @@
       </p>
 
       <div class="flex flex-wrap gap-1">
-        <span
-          v-for="genre in book.genre"
-          :key="genre"
-          class="text-xs text-gray-500"
-        >
+        <span v-for="genre in book.genre" :key="genre" class="text-xs text-gray-500">
           {{ genre }}
           <span v-if="genre !== book.genre[book.genre.length - 1]"> • </span>
         </span>
@@ -46,17 +31,10 @@
 
       <div class="flex items-center gap-2 pt-1">
         <div class="flex">
-          <span
-            v-for="(percentage, index) in stars"
-            :key="index"
-            class="relative inline-block text-lg leading-none"
-          >
+          <span v-for="(percentage, index) in stars" :key="index" class="relative inline-block text-lg leading-none">
             <span class="text-gray-300"> ★ </span>
 
-            <span
-              class="absolute left-0 top-0 overflow-hidden text-black"
-              :style="{ width: `${percentage}%` }"
-            >
+            <span class="absolute left-0 top-0 overflow-hidden text-black" :style="{ width: `${percentage}%` }">
               ★
             </span>
           </span>

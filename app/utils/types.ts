@@ -17,9 +17,9 @@ export interface Book {
   author: string;
   genre: string[];
   description: string;
-  cover_image: string;
+  coverImage: string;
   reviews: Review[];
-  average_rating: number;
+  averageRating: number;
 }
 
 export interface Review {

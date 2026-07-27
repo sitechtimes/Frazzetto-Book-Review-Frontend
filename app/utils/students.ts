@@ -2,9 +2,10 @@ export const students: Student[] = [
   {
     id: 1,
     email: "student@test.com",
-    firstName: "John",
-    lastName: "Smith",
-    userType: "student",
+    first_name: "John",
+    last_name: "Smith",
+    is_student: true,
+    is_teacher: false,
 
     reviews: [
       {
@@ -43,10 +44,10 @@ export const students: Student[] = [
   {
     id: 2,
     email: "student@test.com",
-    firstName: "Jane",
-    lastName: "Smith",
-    userType: "student",
-
+    first_name: "Jane",
+    last_name: "Smith",
+    is_student: true,
+    is_teacher: false,
     reviews: [
       {
         id: 1,
@@ -87,8 +88,9 @@ export const teachers: User[] = [
   {
     id: 1,
     email: "teacher@test.com",
-    firstName: "Dr. Smith",
-    lastName: "Smith",
-    userType: "teacher",
+    first_name: "Dr. Smith",
+    last_name: "Smith",
+    is_student: false,
+    is_teacher: true,
   },
 ];

@@ -3,16 +3,27 @@ export interface TokenLoginResponse {
   access: string;
 }
 
+export interface RefreshTokenResponse {
+  access: string;
+}
+
 export const useUserStore = defineStore("userStore", () => {
   const user = ref<User | null>(null);
-
   const token = ref<string | null>(null);
   const refreshToken = ref<string | null>(null);
+  const isAuthenticated = ref(false);
+
+  const isLoggedIn = computed(() => {
+    return isAuthenticated.value && user.value !== null;
+  });
 
   function signOut() {
     user.value = null;
     token.value = null;
     refreshToken.value = null;
+    isAuthenticated.value = false;
+    useCookie("access").value = null;
+    useCookie("refresh").value = null;
   }
 
   async function getTokenData(
@@ -42,7 +53,9 @@ export const useUserStore = defineStore("userStore", () => {
 
   async function getUserData(): Promise<Result<User, Error>> {
     if (!token.value) {
-      return { error: new Error("Not authenticated") };
+      return {
+        error: new Error("Not authenticated"),
+      };
     }
 
     const headers = {
@@ -75,18 +88,103 @@ export const useUserStore = defineStore("userStore", () => {
       return { error: tokenResult.error };
     }
 
-    token.value = tokenResult.data.access;
-    refreshToken.value = tokenResult.data.refresh;
+    const access = tokenResult.data.access;
+    const refresh = tokenResult.data.refresh;
 
-    return await getUserData();
+    token.value = access;
+    refreshToken.value = refresh;
+
+    const accessCookie = useCookie("access", {
+      expires: new Date(Date.now() + 10 * 60 * 1000),
+    });
+
+    const refreshCookie = useCookie("refresh", {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+
+    accessCookie.value = access;
+    refreshCookie.value = refresh;
+
+    const userResult = await getUserData();
+
+    if (userResult.error) {
+      return { error: userResult.error };
+    }
+
+    user.value = userResult.data;
+    isAuthenticated.value = true;
+
+    return {
+      data: userResult.data,
+    };
+  }
+
+  async function reloadAccess() {
+    const refresh = useCookie("refresh");
+
+    if (!refresh.value) {
+      signOut();
+      return;
+    }
+
+    const { data, error } = await tryRequestEndpoint<RefreshTokenResponse>(
+      "/api/token/refresh/",
+      "POST",
+      {
+        "Content-Type": "application/json",
+      },
+      {
+        refresh: refresh.value,
+      },
+    );
+
+    if (error) {
+      signOut();
+      return;
+    }
+
+    token.value = data.access;
+
+    useCookie("access", {
+      expires: new Date(Date.now() + 10 * 60 * 1000),
+    }).value = data.access;
+  }
+
+  async function loadSession() {
+    const access = useCookie("access");
+    const refresh = useCookie("refresh");
+
+    if (!refresh.value) {
+      return;
+    }
+
+    if (!access.value) {
+      await reloadAccess();
+    } else {
+      token.value = access.value;
+    }
+
+    const { data, error } = await getUserData();
+
+    if (error) {
+      signOut();
+      return;
+    }
+
+    user.value = data;
+    isAuthenticated.value = true;
   }
 
   return {
     user,
     token,
     refreshToken,
+    isAuthenticated,
+    isLoggedIn,
     signIn,
     signOut,
     getUserData,
+    loadSession,
+    reloadAccess,
   };
 });
