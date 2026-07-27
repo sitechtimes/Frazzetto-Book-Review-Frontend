@@ -7,5 +7,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
   
   if (!allowedRoles || allowedRoles.length === 0) return;
 
-  if (userStore.userType && !allowedRoles.includes(userStore.userType)) return await navigateTo(`/${userStore.userType}/homepage`, { redirectCode: 302 });
+  if (userStore.userType && !allowedRoles.includes(userStore.userType)) return await navigateTo(`/${userStore.userType}/home`, { redirectCode: 302 });
 });

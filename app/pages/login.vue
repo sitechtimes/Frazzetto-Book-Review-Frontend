@@ -91,7 +91,7 @@ async function handleLogin() {
   }
 
   if (store.user?.userType === "student") {
-    await router.push("/student/homepage");
+    await router.push("/student/home");
   } else {
     await router.push("/teacher/classes");
   }
