@@ -5,7 +5,7 @@
         <div class="grid grid-cols-[280px_1fr] gap-16">
           <div class="flex flex-col items-center">
             <div class="w-64 h-96 bg-gray-300 rounded overflow-hidden">
-              <img :src="book.coverImage" :alt="book.title" class="w-full h-full object-contain" />
+              <img :src="book.cover_image" :alt="book.title" class="w-full h-full object-contain" />
             </div>
 
             <button class="btn bg-slate-800 text-white px-10 mt-8 hover:bg-slate-900" @click="writeReview">
@@ -23,11 +23,13 @@
             </p>
 
             <div>
-              <h2 class="text-xl font-semibold mb-3">Genres</h2>
+              <h2 class="text-xl font-semibold mb-3">
+                Genres
+              </h2>
 
               <div class="flex flex-wrap gap-3">
-                <span v-for="genre in book.genre" :key="genre" class="px-4 py-1 bg-gray-200 rounded-full text-sm">
-                  {{ genre }}
+                <span v-for="genre in book.genres" :key="genre.id" class="px-4 py-1 bg-gray-200 rounded-full text-sm">
+                  {{ genre.name }}
                 </span>
               </div>
             </div>
@@ -49,7 +51,7 @@
                 </div>
 
                 <span class="text-lg text-gray-700">
-                  {{ book.averageRating.toFixed(1) }}
+                  {{ book.average_rating ? book.average_rating.toFixed(1) : "0.0" }}
 
                   <a href="#reviews" class="hover:underline cursor-pointer">
                     ({{ approvedReviews.length }} reviews)
@@ -108,24 +110,22 @@ onMounted(async () => {
   }
 });
 
-
 const approvedReviews = computed(() => {
-  if (!book.value) {
+  if (!book.value || !book.value.reviews) {
     return [];
   }
 
   return book.value.reviews.filter(
-    (review) => review.isApproved,
+    (review) => review.is_approved,
   );
 });
-
 
 const stars = computed(() => {
   if (!book.value) {
     return [];
   }
 
-  const rating = book.value.averageRating;
+  const rating = book.value.average_rating ?? 0;
 
   return Array.from({ length: 5 }, (_, index) => {
     const value = rating - index;

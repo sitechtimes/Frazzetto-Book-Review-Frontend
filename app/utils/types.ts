@@ -11,34 +11,46 @@ export interface Student extends User {
   reviews: Review[];
 }
 
+export interface Genre {
+  id: number;
+  name: string;
+}
+
 export interface Book {
   id: number;
   title: string;
   author: string;
-  genre: string[];
+  genres: Genre[];
   description: string;
-  coverImage: string;
+  cover_image: string;
   reviews: Review[];
-  averageRating: number;
+  average_rating: number | null;
 }
 
 export interface Review {
   id: number;
-  bookId: number;
-  userId: number;
+  book_id: number;
+  user_id: number;
   rating: number;
   headline: string;
-  text: string;
-  isApproved: boolean;
+  comment: string;
+  is_approved: boolean;
   spoiler: boolean;
-  createdAt: string;
-  approvedAt: string | null;
-  updatedAt: string | null;
+  created_at: string;
+  approved_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Course {
   id: number;
   name: string;
-  classPeriod: string;
+  period: string;
+  students: number[];
+}
+
+export interface CourseWithStudents {
+  id: number;
+  name: string;
+  period: string;
   students: Student[];
 }

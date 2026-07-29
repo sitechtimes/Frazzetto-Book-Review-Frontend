@@ -6,7 +6,7 @@
                     {{ review.headline }}
                 </h2>
 
-                <div v-if="showBookInfo" class="mt-2">
+                <div v-if="showBookInfo && book" class="mt-2">
                     <p class="text-lg text-gray-700">
                         {{ book.title }}
                     </p>
@@ -28,10 +28,10 @@
                 </div>
 
                 <p class="text-sm text-gray-500 mt-2">
-                    {{ formatDate(review.createdAt) }}
+                    {{ formatDate(review.created_at) }}
                 </p>
 
-                <p v-if="review.updatedAt" class="text-xs text-gray-400">
+                <p v-if="review.updated_at" class="text-xs text-gray-400">
                     Edited
                 </p>
             </div>
@@ -41,7 +41,6 @@
             <button v-if="review.spoiler && !showSpoiler"
                 class="w-full text-left bg-gray-200 rounded-md p-5 text-gray-700 hover:bg-gray-300 transition"
                 @click="showSpoiler = true">
-
                 <p class="font-semibold">
                     ⚠ This review contains spoilers
                 </p>
@@ -52,16 +51,14 @@
             </button>
 
             <p v-else class="text-gray-700 text-lg leading-relaxed">
-                {{ review.text }}
+                {{ review.comment }}
             </p>
-
         </div>
 
         <div v-if="showActions" class="flex justify-end gap-4 mt-6">
             <button class="btn bg-white border border-gray-300 text-gray-800 px-8" @click="emit('edit', review)">
                 Edit
             </button>
-
 
             <button class="btn bg-red-600 text-white px-8 hover:bg-red-700" @click="emit('delete', review.id)">
                 Delete
@@ -71,9 +68,9 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(
+withDefaults(
     defineProps<{
-        book: Book;
+        book?: Book;
         review: Review;
         showActions?: boolean;
         showBookInfo?: boolean;

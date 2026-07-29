@@ -13,6 +13,14 @@ export const useUserStore = defineStore("userStore", () => {
   const refreshToken = ref<string | null>(null);
   const isAuthenticated = ref(false);
 
+  const accessCookie = useCookie("access", {
+    expires: new Date(Date.now() + 60 * 60 * 1000),
+  });
+
+  const refreshCookie = useCookie("refresh", {
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  });
+
   const isLoggedIn = computed(() => {
     return isAuthenticated.value && user.value !== null;
   });
@@ -22,22 +30,21 @@ export const useUserStore = defineStore("userStore", () => {
     token.value = null;
     refreshToken.value = null;
     isAuthenticated.value = false;
-    useCookie("access").value = null;
-    useCookie("refresh").value = null;
+
+    accessCookie.value = null;
+    refreshCookie.value = null;
   }
 
   async function getTokenData(
     email: string,
     pin: string,
   ): Promise<Result<TokenLoginResponse, Error>> {
-    const headers = {
-      "Content-Type": "application/json",
-    };
-
     const { data, error } = await tryRequestEndpoint<TokenLoginResponse>(
       "/api/token",
       "POST",
-      headers,
+      {
+        "Content-Type": "application/json",
+      },
       {
         email,
         pin,
@@ -58,16 +65,10 @@ export const useUserStore = defineStore("userStore", () => {
       };
     }
 
-    const headers = {
+    const { data, error } = await tryRequestEndpoint<User>("/users/", "GET", {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token.value}`,
-    };
-
-    const { data, error } = await tryRequestEndpoint<User>(
-      "/users/",
-      "GET",
-      headers,
-    );
+    });
 
     if (error) {
       return { error };
@@ -94,14 +95,6 @@ export const useUserStore = defineStore("userStore", () => {
     token.value = access;
     refreshToken.value = refresh;
 
-    const accessCookie = useCookie("access", {
-      expires: new Date(Date.now() + 10 * 60 * 1000),
-    });
-
-    const refreshCookie = useCookie("refresh", {
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    });
-
     accessCookie.value = access;
     refreshCookie.value = refresh;
 
@@ -120,9 +113,7 @@ export const useUserStore = defineStore("userStore", () => {
   }
 
   async function reloadAccess() {
-    const refresh = useCookie("refresh");
-
-    if (!refresh.value) {
+    if (!refreshCookie.value) {
       signOut();
       return;
     }
@@ -134,7 +125,7 @@ export const useUserStore = defineStore("userStore", () => {
         "Content-Type": "application/json",
       },
       {
-        refresh: refresh.value,
+        refresh: refreshCookie.value,
       },
     );
 
@@ -144,34 +135,35 @@ export const useUserStore = defineStore("userStore", () => {
     }
 
     token.value = data.access;
-
-    useCookie("access", {
-      expires: new Date(Date.now() + 10 * 60 * 1000),
-    }).value = data.access;
+    accessCookie.value = data.access;
   }
 
   async function loadSession() {
-    const access = useCookie("access");
-    const refresh = useCookie("refresh");
-
-    if (!refresh.value) {
-      return;
-    }
-
-    if (!access.value) {
-      await reloadAccess();
-    } else {
-      token.value = access.value;
-    }
-
-    const { data, error } = await getUserData();
-
-    if (error) {
+    if (!refreshCookie.value) {
       signOut();
       return;
     }
 
-    user.value = data;
+    token.value = accessCookie.value ?? null;
+
+    const userResult = await getUserData();
+
+    if (!userResult.error) {
+      user.value = userResult.data;
+      isAuthenticated.value = true;
+      return;
+    }
+
+    await reloadAccess();
+
+    const retryResult = await getUserData();
+
+    if (retryResult.error) {
+      signOut();
+      return;
+    }
+
+    user.value = retryResult.data;
     isAuthenticated.value = true;
   }
 

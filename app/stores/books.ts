@@ -1,26 +1,10 @@
-export interface Genre {
-  id: number;
-  name: string;
-}
-
-export interface BackendBook {
-  id: number;
-  title: string;
-  author: string;
-  description: string;
-  genres: Genre[];
-  cover_image: string;
-  average_rating: number;
-  reviews?: Review[];
-}
-
 export const useBookStore = defineStore("bookStore", () => {
   const books = ref<Book[]>([]);
-  const genres = ref<string[]>([]);
+  const genres = ref<Genre[]>([]);
   const selectedBook = ref<Book | null>(null);
 
   async function getAllBooks(): Promise<Result<Book[], Error>> {
-    const { data, error } = await tryRequestEndpoint<BackendBook[]>(
+    const { data, error } = await tryRequestEndpoint<Book[]>(
       "/books/all",
       "GET",
       {
@@ -32,21 +16,12 @@ export const useBookStore = defineStore("bookStore", () => {
       return { error };
     }
 
-    books.value = data.map((book) => ({
-      id: book.id,
-      title: book.title,
-      author: book.author,
-      description: book.description,
-      genre: book.genres.map((genre) => genre.name),
-      coverImage: book.cover_image,
-      averageRating: book.average_rating,
-      reviews: book.reviews ?? [],
-    }));
+    books.value = data;
 
-    return { data: books.value };
+    return { data };
   }
 
-  async function getGenres(): Promise<Result<string[], Error>> {
+  async function getGenres(): Promise<Result<Genre[], Error>> {
     const { data, error } = await tryRequestEndpoint<Genre[]>(
       "/books/genres",
       "GET",
@@ -59,13 +34,31 @@ export const useBookStore = defineStore("bookStore", () => {
       return { error };
     }
 
-    genres.value = data.map((genre) => genre.name);
+    genres.value = data;
 
-    return { data: genres.value };
+    return { data };
+  }
+
+  async function getBookReviews(
+    bookId: number,
+  ): Promise<Result<Review[], Error>> {
+    const { data, error } = await tryRequestEndpoint<Review[]>(
+      `/books/reviews/book/${bookId}`,
+      "GET",
+      {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    return { data };
   }
 
   async function getBookById(id: number): Promise<Result<Book, Error>> {
-    const { data, error } = await tryRequestEndpoint<BackendBook>(
+    const { data, error } = await tryRequestEndpoint<Book>(
       `/books/${id}`,
       "GET",
       {
@@ -77,20 +70,106 @@ export const useBookStore = defineStore("bookStore", () => {
       return { error };
     }
 
-    const formattedBook: Book = {
-      id: data.id,
-      title: data.title,
-      author: data.author,
-      description: data.description,
-      genre: data.genres.map((genre) => genre.name),
-      coverImage: data.cover_image,
-      averageRating: data.average_rating,
-      reviews: data.reviews ?? [],
+    const reviewsResult = await getBookReviews(id);
+
+    if (reviewsResult.error) {
+      return { error: reviewsResult.error };
+    }
+
+    const bookWithReviews: Book = {
+      ...data,
+      reviews: reviewsResult.data,
     };
 
-    selectedBook.value = formattedBook;
+    selectedBook.value = bookWithReviews;
 
-    return { data: formattedBook };
+    return {
+      data: bookWithReviews,
+    };
+  }
+
+  async function createBook(bookData: {
+    title: string;
+    author: string;
+    description: string;
+    genres: number[];
+    cover_image: File | null;
+  }): Promise<Result<Book, Error>> {
+    const userStore = useUserStore();
+
+    const { token } = storeToRefs(userStore);
+
+    const formData = new FormData();
+
+    formData.append("title", bookData.title);
+    formData.append("author", bookData.author);
+    formData.append("description", bookData.description);
+
+    bookData.genres.forEach((genreId) => {
+      formData.append("genre_ids", genreId.toString());
+    });
+
+    if (bookData.cover_image) {
+      formData.append("cover_image", bookData.cover_image);
+    }
+
+    console.log("FormData being sent:");
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    const { data, error } = await tryRequestEndpoint<Book>(
+      "/books/create",
+      "POST",
+      {
+        Authorization: `Bearer ${token.value}`,
+      },
+      formData,
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    books.value.push(data);
+
+    return { data };
+  }
+
+  async function createGenre(name: string): Promise<Result<Genre, Error>> {
+    const userStore = useUserStore();
+
+    const { token } = storeToRefs(userStore);
+
+    const existingGenre = genres.value.find(
+      (genre) => genre.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (existingGenre) {
+      return {
+        data: existingGenre,
+      };
+    }
+
+    const { data, error } = await tryRequestEndpoint<Genre>(
+      "/books/genres/create",
+      "POST",
+      {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`,
+      },
+      {
+        name,
+      },
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    genres.value.push(data);
+
+    return { data };
   }
 
   return {
@@ -99,6 +178,9 @@ export const useBookStore = defineStore("bookStore", () => {
     selectedBook,
     getAllBooks,
     getGenres,
+    getBookReviews,
     getBookById,
+    createBook,
+    createGenre,
   };
 });

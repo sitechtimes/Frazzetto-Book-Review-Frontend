@@ -11,7 +11,7 @@
                 <div class="flex flex-col items-center">
 
                     <div class="w-64 h-96 bg-gray-300 rounded flex items-center justify-center overflow-hidden">
-                        <img :src="book.coverImage" :alt="book.title" class="w-full h-full object-contain" />
+                        <img :src="book.cover_image" :alt="book.title" class="w-full h-full object-contain" />
                     </div>
 
                     <div class="mt-8 text-center w-64">
@@ -24,7 +24,7 @@
                         </p>
 
                         <p class="text-gray-500 mt-1">
-                            {{ book.genre.join(", ") }}
+                            {{book.genres?.map((genre) => genre.name).join(", ") ?? "No genres available"}}
                         </p>
 
                         <p class="text-sm text-gray-600 mt-4">
@@ -66,7 +66,7 @@
 
                     <div>
 
-                        <textarea v-model="review.text" required
+                        <textarea v-model="review.comment" required
                             class="w-full h-56 px-4 py-3 border border-gray-300 bg-white rounded-md resize-none focus:outline-none focus:border-gray-500"
                             placeholder="Write your thoughts about this book..." />
                     </div>
@@ -101,9 +101,15 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-    book: Book;
-}>();
+const props = withDefaults(
+    defineProps<{
+        book: Book;
+        initialReview?: Review;
+    }>(),
+    {
+        initialReview: undefined,
+    }
+);
 
 const emit = defineEmits<{
     (
@@ -111,7 +117,7 @@ const emit = defineEmits<{
         review: {
             rating: number;
             headline: string;
-            text: string;
+            comment: string;
             spoiler: boolean;
         }
     ): void;
@@ -120,10 +126,10 @@ const emit = defineEmits<{
 }>();
 
 const review = ref({
-    rating: 0,
-    headline: "",
-    text: "",
-    spoiler: false,
+    rating: props.initialReview?.rating ?? 0,
+    headline: props.initialReview?.headline ?? "",
+    comment: props.initialReview?.comment ?? "",
+    spoiler: props.initialReview?.spoiler ?? false,
 });
 
 function submitReview() {
@@ -138,7 +144,7 @@ function submitReview() {
         return;
     }
 
-    if (!review.value.text.trim()) {
+    if (!review.value.comment.trim()) {
         alert("Please write a review.");
         return;
     }
@@ -146,7 +152,7 @@ function submitReview() {
     emit("submit", {
         rating: review.value.rating,
         headline: review.value.headline,
-        text: review.value.text,
+        comment: review.value.comment,
         spoiler: review.value.spoiler,
     });
 }

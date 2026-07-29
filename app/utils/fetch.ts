@@ -35,6 +35,7 @@ async function tryCatch<T, E = Error>(
 ): Promise<Result<T, E>> {
   try {
     const data = await promise;
+
     return { data };
   } catch (error) {
     return { error: error as E };
@@ -49,13 +50,13 @@ async function tryCatch<T, E = Error>(
  * @param endpoint - the endpoint to request. Should start with `/`.
  * @param method - the HTTP method to use for the request. Defaults to `"GET"`.
  * @param headers - headers to include in the request, such as authorization tokens.
- * @param body - the body of the request as an object. It will be automatically converted to JSON.
+ * @param body - the body of the request as an object or FormData.
  */
 async function requestEndpoint(
   endpoint: string,
   method?: string,
   headers?: HeadersInit,
-  body?: object,
+  body?: Record<string, unknown> | FormData,
 ): Promise<void>;
 
 /**
@@ -66,7 +67,7 @@ async function requestEndpoint(
  * @param endpoint - the endpoint to request. Should start with `/`.
  * @param method - the HTTP method to use for the request. Defaults to `"GET"`.
  * @param headers - headers to include in the request, such as authorization tokens.
- * @param body - the body of the request as an object. It will be automatically converted to JSON.
+ * @param body - the body of the request as an object or FormData.
  *
  * @returns the JSON response from the request.
  *
@@ -83,16 +84,17 @@ async function requestEndpoint<T>(
   endpoint: string,
   method?: string,
   headers?: HeadersInit,
-  body?: object,
+  body?: Record<string, unknown> | FormData,
 ): Promise<T>;
 
 async function requestEndpoint<T>(
   endpoint: string,
   method = "GET",
   headers: HeadersInit = {},
-  body?: object,
+  body?: Record<string, unknown> | FormData,
 ): Promise<T | void> {
   const config = useRuntimeConfig();
+
   const baseUrl = config.public.backend;
 
   const options: RequestInit = {
@@ -100,7 +102,25 @@ async function requestEndpoint<T>(
     headers,
   };
 
-  if (body) {
+  if (body instanceof FormData) {
+    /**
+     * FormData requests must not manually set Content-Type.
+     *
+     * The browser automatically adds:
+     * multipart/form-data; boundary=...
+     *
+     * Setting it manually breaks file uploads.
+     */
+    options.body = body;
+  } else if (body) {
+    /**
+     * Normal object requests are automatically converted to JSON.
+     */
+    options.headers = {
+      "Content-Type": "application/json",
+      ...headers,
+    };
+
     options.body = JSON.stringify(body);
   }
 
@@ -126,13 +146,13 @@ async function requestEndpoint<T>(
  * @param endpoint - the endpoint to request. Should start with `/`.
  * @param method - the HTTP method to use for the request. Defaults to `"GET"`.
  * @param headers - headers to include in the request, such as authorization tokens.
- * @param body - the body of the request as an object. It will be automatically converted to JSON.
+ * @param body - the body of the request as an object or FormData.
  */
 export async function tryRequestEndpoint(
   endpoint: string,
   method?: string,
   headers?: HeadersInit,
-  body?: object,
+  body?: Record<string, unknown> | FormData,
 ): Promise<Result<void>>;
 
 /**
@@ -144,7 +164,7 @@ export async function tryRequestEndpoint(
  * @param endpoint - the endpoint to request. Should start with `/`.
  * @param method - the HTTP method to use for the request. Defaults to `"GET"`.
  * @param headers - headers to include in the request, such as authorization tokens.
- * @param body - the body of the request as an object. It will be automatically converted to JSON.
+ * @param body - the body of the request as an object or FormData.
  *
  * @returns a Result containing either the response data or an error.
  *
@@ -165,14 +185,14 @@ export async function tryRequestEndpoint<T, E = Error>(
   endpoint: string,
   method?: string,
   headers?: HeadersInit,
-  body?: object,
+  body?: Record<string, unknown> | FormData,
 ): Promise<Result<T, E>>;
 
 export async function tryRequestEndpoint<T, E = Error>(
   endpoint: string,
   method?: string,
   headers?: HeadersInit,
-  body?: object,
+  body?: Record<string, unknown> | FormData,
 ): Promise<Result<T | void, E>> {
   return tryCatch<T, E>(requestEndpoint<T>(endpoint, method, headers, body));
 }
