@@ -30,6 +30,6 @@ const router = useRouter();
 
 async function handleLogout() {
   await store.signOut();
-  router.push("/login");
+  router.push("/");
 }
 </script>
