@@ -1,90 +1,76 @@
 <template>
-  <div class="min-h-screen bg-base-200">
-    <main class="max-w-6xl mx-auto py-12">
-      <div class="flex justify-between items-center mb-8">
-        <div>
-          <h1 class="text-3xl font-bold text-black">
-            {{ course?.name }}
-          </h1>
+  <RoleLayout>
+    <div class="min-h-screen bg-base-200">
+      <main class="max-w-6xl mx-auto py-12">
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-black">
+              {{ course?.name }}
+            </h1>
 
-          <p class="text-gray-600">Period {{ course?.period }}</p>
-        </div>
+            <p class="text-gray-600">Period {{ course?.period }}</p>
+          </div>
 
-        <!-- <button class="btn btn-outline">
+          <!-- <button class="btn btn-outline">
           Assign +
         </button> -->
-      </div>
+        </div>
 
-      <div class="flex gap-8">
-        <TeacherSideBar
-          :students="course?.students ?? []"
-          title="Students"
-          @select="selectStudent"
-        />
+        <div class="flex gap-8">
+          <TeacherSideBar :students="course?.students ?? []" title="Students" @select="selectStudent" />
 
-        <section class="flex-1">
-          <div class="p-6">
-            <div class="flex justify-between mb-6">
-              <h2 class="text-xl font-semibold">Reviews</h2>
+          <section class="flex-1">
+            <div class="p-6">
+              <div class="flex justify-between mb-6">
+                <h2 class="text-xl font-semibold">Reviews</h2>
 
-              <span>
-                Selected:
-                {{
-                  selectedStudent
-                    ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
-                    : "All"
-                }}
-              </span>
-            </div>
-
-            <div class="mb-10">
-              <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-gray-700">Pending</h3>
-
-                <hr class="flex-1 border-gray-300" />
+                <span>
+                  Selected:
+                  {{
+                    selectedStudent
+                      ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
+                      : "All"
+                  }}
+                </span>
               </div>
 
-              <TeacherApprovalCard
-                v-for="review in filteredPendingReviews"
-                :key="review.id"
-                :review="review"
-                :book="getBook(review.book_id)"
-                :student="getStudent(review.user_id)"
-                :show-actions="true"
-                @approve="approveReview"
-                @reject="rejectReview"
-              />
-            </div>
+              <div class="mb-10">
+                <div class="flex items-center gap-3 mb-4">
+                  <h3 class="text-gray-700">Pending</h3>
 
-            <div>
-              <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-gray-700">Approved</h3>
+                  <hr class="flex-1 border-gray-300" />
+                </div>
 
-                <hr class="flex-1 border-gray-300" />
+                <TeacherApprovalCard v-for="review in filteredPendingReviews" :key="review.id" :review="review"
+                  :book="getBook(review.book_id)" :student="getStudent(review.user_id)" :show-actions="true"
+                  @approve="approveReview" @reject="rejectReview" />
               </div>
 
-              <TeacherApprovalCard
-                v-for="review in filteredApprovedReviews"
-                :key="review.id"
-                :review="review"
-                :book="getBook(review.book_id)"
-                :student="getStudent(review.user_id)"
-              />
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <h3 class="text-gray-700">Approved</h3>
+
+                  <hr class="flex-1 border-gray-300" />
+                </div>
+
+                <TeacherApprovalCard v-for="review in filteredApprovedReviews" :key="review.id" :review="review"
+                  :book="getBook(review.book_id)" :student="getStudent(review.user_id)" />
+              </div>
             </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </RoleLayout>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: "teacher",
+  layout: false,
   requiresAuth: true,
   redirectIfAuth: false,
   middleware: "role-check",
-  allowedRoles: ["teacher"],
+  allowedRoles: ["student", "teacher"],
 });
 
 const route = useRoute();

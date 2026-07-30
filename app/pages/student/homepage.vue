@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-    layout: "student",
+    layout: false,
     requiresAuth: true,
     redirectIfAuth: false,
     middleware: "role-check",
