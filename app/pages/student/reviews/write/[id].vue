@@ -15,7 +15,10 @@ const route = useRoute();
 const router = useRouter();
 
 const bookStore = useBookStore();
+const reviewStore = useReviewStore();
+const userStore = useUserStore();
 
+const { user } = storeToRefs(userStore);
 const book = computed(() => bookStore.selectedBook);
 
 
@@ -29,21 +32,35 @@ onMounted(async () => {
   }
 });
 
-
-async function submitReview(review: Review) {
-  if (!book.value) {
+async function submitReview(review: {
+  rating: number;
+  headline: string;
+  comment: string;
+  spoiler: boolean;
+}) {
+  if (!book.value || !user.value) {
     return;
   }
 
-  const newReview = {
-    bookId: book.value.id,
-    ...review,
+  const reviewData = {
+    book_id: book.value.id,
+    user_id: user.value.id,
+    rating: review.rating,
+    headline: review.headline,
+    comment: review.comment,
+    spoiler: review.spoiler,
   };
 
-  console.log("New review:", newReview);
+  const { data, error } = await reviewStore.createReview(reviewData);
 
-  // TODO:
-  // await reviewStore.createReview(newReview);
+  if (error) {
+    console.error("Failed to create review:", error);
+    return;
+  }
+
+  console.log("Review created:", data);
+
+  router.push(`/books/${book.value.id}`);
 }
 
 function cancel() {

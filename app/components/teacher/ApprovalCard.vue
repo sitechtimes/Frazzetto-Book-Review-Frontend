@@ -36,12 +36,12 @@
 
     <div v-if="showActions" class="flex justify-end gap-2 mt-6">
       <button class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
-        @click="$emit('reject', review.id)">
+        @click="$emit('reject', review)">
         Reject
       </button>
 
       <button class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
-        @click="$emit('approve', review.id)">
+        @click="$emit('approve', review)">
         Approve
       </button>
     </div>
@@ -58,8 +58,8 @@ const props = defineProps<{
 }>();
 
 defineEmits<{
-  reject: [id: number];
-  approve: [id: number];
+  reject: [review: Review];
+  approve: [review: Review];
 }>();
 
 const stars = computed(() => {

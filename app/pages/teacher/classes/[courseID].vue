@@ -50,13 +50,10 @@
                 <hr class="flex-1 border-gray-300" />
               </div>
 
-
               <TeacherApprovalCard v-for="review in filteredPendingReviews" :key="review.id" :review="review"
                 :book="getBook(review.book_id)" :student="getStudent(review.user_id)" :show-actions="true"
                 @approve="approveReview" @reject="rejectReview" />
             </div>
-
-
 
             <div>
               <div class="flex items-center gap-3 mb-4">
@@ -110,6 +107,8 @@ onMounted(async () => {
   }
 
   const courseData = courseResult.data;
+
+  await bookStore.getAllBooks();
 
   const studentResults = await Promise.all(
     courseData.students.map((id) =>
@@ -232,15 +231,44 @@ function selectStudent(studentId: number | null) {
   selectedStudentId.value = studentId;
 }
 
-function approveReview(id: number) {
-  console.log("approve", id);
+async function approveReview(review: Review) {
+  const { error } = await reviewStore.approveReview(
+    review.id,
+    true,
+    review,
+  );
 
-  // add backend endpoint later
+  if (error) {
+    console.error("Failed to approve review:", error);
+    return;
+  }
+
+  const approvedReview = {
+    ...review,
+    is_approved: true,
+  };
+
+  pendingReviews.value = pendingReviews.value.filter(
+    (item) => item.id !== review.id,
+  );
+
+  approvedReviews.value.push(approvedReview);
 }
 
-function rejectReview(id: number) {
-  console.log("reject", id);
+async function rejectReview(review: Review) {
+  const { error } = await reviewStore.approveReview(
+    review.id,
+    false,
+    review,
+  );
 
-  // add backend endpoint later
+  if (error) {
+    console.error("Failed to reject review:", error);
+    return;
+  }
+
+  pendingReviews.value = pendingReviews.value.filter(
+    (item) => item.id !== review.id,
+  );
 }
 </script>
