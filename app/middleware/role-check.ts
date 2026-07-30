@@ -1,9 +1,9 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore();
 
-  if (!userStore.isAuthenticated) return;
+  if (!userStore.isAuthenticated || !userStore.user) return;
 
-  const allowedRoles = to.meta.allowedRoles;
+  const allowedRoles = to.meta.allowedRoles as string[] | undefined;
   
   if (!allowedRoles || allowedRoles.length === 0) return;
   
