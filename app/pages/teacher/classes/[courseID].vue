@@ -7,9 +7,7 @@
             {{ course?.name }}
           </h1>
 
-          <p class="text-gray-600">
-            Period {{ course?.period }}
-          </p>
+          <p class="text-gray-600">Period {{ course?.period }}</p>
         </div>
 
         <!-- <button class="btn btn-outline">
@@ -17,18 +15,17 @@
         </button> -->
       </div>
 
-
       <div class="flex gap-8">
-        <TeacherSideBar :students="course?.students ?? []" title="Students" @select="selectStudent" />
-
+        <TeacherSideBar
+          :students="course?.students ?? []"
+          title="Students"
+          @select="selectStudent"
+        />
 
         <section class="flex-1">
           <div class="p-6">
-
             <div class="flex justify-between mb-6">
-              <h2 class="text-xl font-semibold">
-                Reviews
-              </h2>
+              <h2 class="text-xl font-semibold">Reviews</h2>
 
               <span>
                 Selected:
@@ -40,35 +37,40 @@
               </span>
             </div>
 
-
             <div class="mb-10">
               <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-gray-700">
-                  Pending
-                </h3>
+                <h3 class="text-gray-700">Pending</h3>
 
                 <hr class="flex-1 border-gray-300" />
               </div>
 
-              <TeacherApprovalCard v-for="review in filteredPendingReviews" :key="review.id" :review="review"
-                :book="getBook(review.book_id)" :student="getStudent(review.user_id)" :show-actions="true"
-                @approve="approveReview" @reject="rejectReview" />
+              <TeacherApprovalCard
+                v-for="review in filteredPendingReviews"
+                :key="review.id"
+                :review="review"
+                :book="getBook(review.book_id)"
+                :student="getStudent(review.user_id)"
+                :show-actions="true"
+                @approve="approveReview"
+                @reject="rejectReview"
+              />
             </div>
 
             <div>
               <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-gray-700">
-                  Approved
-                </h3>
+                <h3 class="text-gray-700">Approved</h3>
 
                 <hr class="flex-1 border-gray-300" />
               </div>
 
-
-              <TeacherApprovalCard v-for="review in filteredApprovedReviews" :key="review.id" :review="review"
-                :book="getBook(review.book_id)" :student="getStudent(review.user_id)" />
+              <TeacherApprovalCard
+                v-for="review in filteredApprovedReviews"
+                :key="review.id"
+                :review="review"
+                :book="getBook(review.book_id)"
+                :student="getStudent(review.user_id)"
+              />
             </div>
-
           </div>
         </section>
       </div>
@@ -76,10 +78,13 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 definePageMeta({
   layout: "teacher",
+  requiresAuth: true,
+  redirectIfAuth: false,
+  middleware: "role-check",
+  allowedRoles: ["teacher"],
 });
 
 const route = useRoute();
@@ -111,18 +116,11 @@ onMounted(async () => {
   await bookStore.getAllBooks();
 
   const studentResults = await Promise.all(
-    courseData.students.map((id) =>
-      userStore.getUserById(id),
-    ),
+    courseData.students.map((id) => userStore.getUserById(id)),
   );
 
   const students: Student[] = studentResults
-    .filter(
-      (
-        result,
-      ): result is { data: User } =>
-        result.data !== undefined,
-    )
+    .filter((result): result is { data: User } => result.data !== undefined)
     .map((result) => ({
       ...result.data,
       reviews: [],
@@ -133,11 +131,9 @@ onMounted(async () => {
     students,
   };
 
-  const pendingResult =
-    await reviewStore.getPendingReviews();
+  const pendingResult = await reviewStore.getPendingReviews();
 
-  const approvedResult =
-    await reviewStore.getApprovedReviews();
+  const approvedResult = await reviewStore.getApprovedReviews();
 
   if (pendingResult.error) {
     console.error(pendingResult.error);
@@ -149,15 +145,13 @@ onMounted(async () => {
     return;
   }
 
-  pendingReviews.value =
-    pendingResult.data.filter((review) =>
-      courseData.students.includes(review.user_id),
-    );
+  pendingReviews.value = pendingResult.data.filter((review) =>
+    courseData.students.includes(review.user_id),
+  );
 
-  approvedReviews.value =
-    approvedResult.data.filter((review) =>
-      courseData.students.includes(review.user_id),
-    );
+  approvedReviews.value = approvedResult.data.filter((review) =>
+    courseData.students.includes(review.user_id),
+  );
 });
 
 const selectedStudent = computed(() => {
@@ -166,8 +160,7 @@ const selectedStudent = computed(() => {
   }
 
   return course.value.students.find(
-    (student) =>
-      student.id === selectedStudentId.value,
+    (student) => student.id === selectedStudentId.value,
   );
 });
 
@@ -177,10 +170,8 @@ const filteredPendingReviews = computed(() => {
   }
 
   return pendingReviews.value.filter(
-    (review) =>
-      review.user_id === selectedStudentId.value,
+    (review) => review.user_id === selectedStudentId.value,
   );
-
 });
 
 const filteredApprovedReviews = computed(() => {
@@ -189,16 +180,13 @@ const filteredApprovedReviews = computed(() => {
   }
 
   return approvedReviews.value.filter(
-    (review) =>
-      review.user_id === selectedStudentId.value,
+    (review) => review.user_id === selectedStudentId.value,
   );
 });
 
 function getStudent(userId: number) {
   return (
-    course.value?.students.find(
-      (student) => student.id === userId,
-    ) ?? {
+    course.value?.students.find((student) => student.id === userId) ?? {
       id: userId,
       first_name: "Unknown",
       last_name: "Student",
@@ -212,9 +200,7 @@ function getStudent(userId: number) {
 
 function getBook(bookId: number) {
   return (
-    bookStore.books.find(
-      (book) => book.id === bookId,
-    ) ?? {
+    bookStore.books.find((book) => book.id === bookId) ?? {
       id: bookId,
       title: "Unknown Book",
       author: "Unknown Author",
@@ -232,11 +218,7 @@ function selectStudent(studentId: number | null) {
 }
 
 async function approveReview(review: Review) {
-  const { error } = await reviewStore.approveReview(
-    review.id,
-    true,
-    review,
-  );
+  const { error } = await reviewStore.approveReview(review.id, true, review);
 
   if (error) {
     console.error("Failed to approve review:", error);
@@ -256,11 +238,7 @@ async function approveReview(review: Review) {
 }
 
 async function rejectReview(review: Review) {
-  const { error } = await reviewStore.approveReview(
-    review.id,
-    false,
-    review,
-  );
+  const { error } = await reviewStore.approveReview(review.id, false, review);
 
   if (error) {
     console.error("Failed to reject review:", error);

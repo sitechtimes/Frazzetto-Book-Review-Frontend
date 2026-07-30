@@ -6,7 +6,11 @@
           My Classes
         </h1>
         <div class="space-y-10">
-          <TeacherClassCard v-for="course in classes" :key="course.id" :course="course" />
+          <TeacherClassCard
+            v-for="course in classes"
+            :key="course.id"
+            :course="course"
+          />
         </div>
       </main>
     </div>
@@ -16,6 +20,10 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
+  requiresAuth: true,
+  redirectIfAuth: false,
+  middleware: "role-check",
+  allowedRoles: ["teacher"],
 });
 
 const courseStore = useCourseStore();
