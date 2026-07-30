@@ -31,9 +31,10 @@
                     {{ formatDate(review.created_at) }}
                 </p>
 
-                <p v-if="review.updated_at" class="text-xs text-gray-400">
+                <!-- Elisa needs to make it not exist unless the review was actually changed after the initizal creation -->
+                <!-- <p v-if="review.updated_at" class="text-xs text-gray-400">
                     Edited
-                </p>
+                </p> -->
             </div>
         </div>
 
