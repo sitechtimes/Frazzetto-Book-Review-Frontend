@@ -30,7 +30,7 @@ export type Result<T, E = Error> = Success<T> | Failure<E>;
  *
  * doSomething(data); // data can now be used
  */
-export async function tryCatch<T, E = Error>(
+async function tryCatch<T, E = Error>(
   promise: Promise<T>,
 ): Promise<Result<T, E>> {
   try {
