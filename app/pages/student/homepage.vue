@@ -2,9 +2,7 @@
     <RoleLayout>
         <div class="min-h-screen bg-base-200">
             <section class="max-w-5xl mx-auto px-10 py-14">
-                <h1 class="text-4xl font-bold text-center mb-12">
-                    My Reviews
-                </h1>
+                <h1 class="text-4xl font-bold text-center mb-12">My Reviews</h1>
 
                 <div v-if="selectedUserReviews.length" class="space-y-6">
                     <ReviewCard v-for="review in selectedUserReviews" :key="review.id" :review="review"
@@ -25,7 +23,11 @@
 
 <script setup lang="ts">
 definePageMeta({
-    layout: false,
+    layout: "student",
+    requiresAuth: true,
+    redirectIfAuth: false,
+    middleware: "role-check",
+    allowedRoles: ["student"],
 });
 
 const userStore = useUserStore();
@@ -50,9 +52,7 @@ onMounted(async () => {
 });
 
 function getBook(bookId: number): Book {
-    const book = books.value.find(
-        (book) => book.id === bookId,
-    );
+    const book = books.value.find((book) => book.id === bookId);
 
     if (!book) {
         throw new Error(`Book ${bookId} not found`);
@@ -75,9 +75,7 @@ async function confirmDelete() {
         return;
     }
 
-    const { error } = await reviewStore.deleteReview(
-        reviewToDelete.value,
-    );
+    const { error } = await reviewStore.deleteReview(reviewToDelete.value);
 
     if (error) {
         console.error(error);
