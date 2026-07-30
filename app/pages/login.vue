@@ -52,7 +52,7 @@ const router = useRouter();
 
 const loginForm = reactive({
   email: "",
-  pin: null as number | null,
+  pin: "",
 });
 
 watch(
@@ -74,7 +74,7 @@ watch(
 );
 
 async function handleLogin() {
-  if (!loginForm.email || !loginForm.pin) {
+  if (!loginForm.email || loginForm.pin === null) {
     errorMessage.value = "Email and PIN are required";
     return;
   }
@@ -83,16 +83,16 @@ async function handleLogin() {
 
   errorMessage.value = "";
 
-  const error = await store.signIn(loginForm.email, loginForm.pin);
+  const { data, error } = await store.signIn(loginForm.email, loginForm.pin);
 
   if (error) {
     errorMessage.value = error.message;
     return;
   }
 
-  if (store.user?.userType === "student") {
+  if (data.is_student) {
     await router.push("/student/home");
-  } else {
+  } else if (data.is_teacher) {
     await router.push("/teacher/classes");
   }
 }

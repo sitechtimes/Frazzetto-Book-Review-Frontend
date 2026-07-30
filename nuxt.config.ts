@@ -7,13 +7,12 @@ export default defineNuxtConfig({
   modules: ["@pinia/nuxt", 
     "pinia-plugin-persistedstate/nuxt",],    //persisted state is temporary, for testing, replace when we have backend
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
   css: ["~/assets/main.css"],
   runtimeConfig: {
     public: {
       backend: "",
-      event: ""
-    }
-  }
+    },
+  },
 });

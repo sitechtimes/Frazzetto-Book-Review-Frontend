@@ -1,22 +1,12 @@
 <template>
-  <div class="bg-base-200">
-    <button class="btn btn-outline m-10" @click="cancel">< Back</button>
-    <p>
-      add navbar to page --> can teachers add reviews? if YES, take file out &
-      dynamic layout; if NO, only make write review btn visible to students &
-      student layout
-    </p>
-  </div>
+  <div class="bg-base-200 min-h-screen">
+    <StudentWriteReview v-if="book" :book="book" @submit="submitReview" @cancel="cancel" />
 
-  <StudentWriteReview
-    v-if="book"
-    :book="book"
-    @submit="submitReview"
-    @cancel="cancel"
-  />
-
-  <div v-else class="min-h-screen flex items-center justify-center">
-    <h1 class="text-3xl font-bold">Book not found</h1>
+    <div v-else class="min-h-screen flex items-center justify-center">
+      <h1 class="text-3xl font-bold">
+        Book not found
+      </h1>
+    </div>
   </div>
 </template>
 
@@ -31,23 +21,44 @@ definePageMeta({
 const route = useRoute();
 const router = useRouter();
 
-const book = computed(() => {
+const bookStore = useBookStore();
+
+const book = computed(() => bookStore.selectedBook);
+
+
+onMounted(async () => {
   const id = Number(route.params.id);
-  return books.find((book) => book.id === id);
+
+  const { error } = await bookStore.getBookById(id);
+
+  if (error) {
+    console.error(error);
+  }
 });
 
-function submitReview(review: any) {
+
+async function submitReview(review: Review) {
   if (!book.value) {
     return;
   }
 
-  console.log("New review:", {
+  const newReview = {
     bookId: book.value.id,
     ...review,
-  });
+  };
+
+  console.log("New review:", newReview);
+
+  // TODO:
+  // await reviewStore.createReview(newReview);
 }
 
 function cancel() {
-  router.push(`/books/${book.value?.id}`);
+  if (!book.value) {
+    router.back();
+    return;
+  }
+
+  router.push(`/books/${book.value.id}`);
 }
 </script>
