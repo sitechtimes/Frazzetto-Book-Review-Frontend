@@ -16,11 +16,7 @@
       </div>
 
       <div class="flex gap-8">
-        <TeacherSideBar
-          :students="course?.students ?? []"
-          title="Students"
-          @select="selectStudent"
-        />
+        <TeacherSideBar :students="course?.students ?? []" title="Students" @select="selectStudent" />
 
         <section class="flex-1">
           <div class="p-6">
@@ -44,16 +40,9 @@
                 <hr class="flex-1 border-gray-300" />
               </div>
 
-              <TeacherApprovalCard
-                v-for="review in filteredPendingReviews"
-                :key="review.id"
-                :review="review"
-                :book="getBook(review.book_id)"
-                :student="getStudent(review.user_id)"
-                :show-actions="true"
-                @approve="approveReview"
-                @reject="rejectReview"
-              />
+              <TeacherApprovalCard v-for="review in filteredPendingReviews" :key="review.id" :review="review"
+                :book="getBook(review.book_id)" :student="getStudent(review.user_id)" :show-actions="true"
+                @approve="approveReview" @reject="rejectReview" />
             </div>
 
             <div>
@@ -63,13 +52,8 @@
                 <hr class="flex-1 border-gray-300" />
               </div>
 
-              <TeacherApprovalCard
-                v-for="review in filteredApprovedReviews"
-                :key="review.id"
-                :review="review"
-                :book="getBook(review.book_id)"
-                :student="getStudent(review.user_id)"
-              />
+              <TeacherApprovalCard v-for="review in filteredApprovedReviews" :key="review.id" :review="review"
+                :book="getBook(review.book_id)" :student="getStudent(review.user_id)" />
             </div>
           </div>
         </section>
