@@ -1,27 +1,20 @@
-export default defineNuxtRouteMiddleware(async (to) => {
-  const nuxtApp = useNuxtApp();
+export default defineNuxtRouteMiddleware((to) => {
   const userStore = useUserStore();
 
   const getHomeRoute = () =>
-    userStore.user?.userType === "teacher" ? "/teacher/classes" : "/student/home";
+    userStore.user?.is_teacher
+      ? "/teacher/classes"
+      : "/student/home";
 
-  // redirect /teacher/home to /teacher/classes
   if (to.path === "/teacher/home") {
-    return navigateTo("/teacher/classes", { redirectCode: 301 });
+    return navigateTo("/teacher/classes");
   }
 
-  if (userStore.isAuth && to.meta.redirectIfAuth) {
-    return navigateTo(getHomeRoute(), { redirectCode: 301 });
+  if (userStore.isAuthenticated && to.meta.redirectIfAuth) {
+    return navigateTo(getHomeRoute());
   }
 
-  if (
-    !import.meta.client || !nuxtApp.isHydrating || !nuxtApp.payload.serverRendered
-  ) {
-    return;
+  if (!userStore.isAuthenticated && to.meta.requiresAuth) {
+    return navigateTo("/login");
   }
-
-  if (!userStore.isAuth && to.meta.requiresAuth) {
-    return navigateTo("/login", { redirectCode: 301 });
-  } 
 });
-

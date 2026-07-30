@@ -203,5 +203,4 @@ export const useUserStore = defineStore("userStore", () => {
     loadSession,
     reloadAccess,
   };
-}, 
-{persist: true}); // THIS IS TEMPORARY, needs backend for checking for session/cookies/idk so user data is saved on reload
+});
