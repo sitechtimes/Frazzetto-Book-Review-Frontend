@@ -93,6 +93,8 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
+  requiresAuth: true,
+  redirectIfAuth: false,
 });
 
 const route = useRoute();

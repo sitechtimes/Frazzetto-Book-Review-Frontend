@@ -1,7 +1,7 @@
 <template>
   <div class="navbar bg-base-100 shadow-sm px-8">
     <div class="flex-1">
-      <NuxtLink to="/student/homepage" class="btn btn-ghost text-2xl font-bold">
+      <NuxtLink to="/student/home" class="btn btn-ghost text-2xl font-bold">
         📚 Frazzetto
       </NuxtLink>
     </div>
@@ -9,7 +9,7 @@
     <div class="flex-none">
       <div class="flex items-center gap-3">
         <NuxtLink
-          to="/student/homepage"
+          to="/student/home"
           class="btn btn-ghost"
           active-class="bg-base-200"
         >

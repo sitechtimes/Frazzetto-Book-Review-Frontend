@@ -6,7 +6,10 @@
 </template>
 
 <script setup lang="ts">
-const router = useRouter();
+definePageMeta({
+  requiresAuth: false,
+  redirectIfAuth: true,
+});
 </script>
 
 <style scoped></style>

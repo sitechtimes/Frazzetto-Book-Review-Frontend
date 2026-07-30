@@ -2,108 +2,140 @@
   <RoleLayout>
     <div class="min-h-screen bg-base-200">
       <section class="max-w-6xl mx-auto px-10 py-14">
-        <h1 class="text-4xl font-bold text-center mb-14">
-          Add a Book
-        </h1>
+        <h1 class="text-4xl font-bold text-center mb-14">Add a Book</h1>
 
         <div class="grid grid-cols-[280px_1fr] gap-16">
           <div class="flex flex-col items-center">
-            <div class="w-64 h-96 bg-gray-300 flex items-center justify-center overflow-hidden">
-              <img v-if="coverPreview" :src="coverPreview" class="w-full h-full object-contain" />
+            <div
+              class="w-64 h-96 bg-gray-300 flex items-center justify-center overflow-hidden"
+            >
+              <img
+                v-if="coverPreview"
+                :src="coverPreview"
+                class="w-full h-full object-contain"
+              />
 
-              <span v-else class="text-gray-500">
-                Cover
-              </span>
+              <span v-else class="text-gray-500"> Cover </span>
             </div>
 
             <label class="mt-8 cursor-pointer text-lg underline">
               Upload Book Cover
 
-              <input type="file" class="hidden" accept="image/*" @change="uploadCover" />
+              <input
+                type="file"
+                class="hidden"
+                accept="image/*"
+                @change="uploadCover"
+              />
             </label>
           </div>
 
           <div class="space-y-7">
             <div>
-              <label class="block text-xl mb-2">
-                Title
-              </label>
+              <label class="block text-xl mb-2"> Title </label>
 
-              <input v-model="book.title" class="w-full h-11 px-4 border bg-white rounded-md" />
+              <input
+                v-model="book.title"
+                class="w-full h-11 px-4 border bg-white rounded-md"
+              />
             </div>
 
             <div>
-              <label class="block text-xl mb-2">
-                Author
-              </label>
+              <label class="block text-xl mb-2"> Author </label>
 
-              <input v-model="book.author" class="w-full h-11 px-4 border bg-white rounded-md" />
+              <input
+                v-model="book.author"
+                class="w-full h-11 px-4 border bg-white rounded-md"
+              />
             </div>
 
             <div>
-              <label class="block text-xl mb-2">
-                Description
-              </label>
+              <label class="block text-xl mb-2"> Description </label>
 
-              <textarea v-model="book.description" class="w-full h-28 px-4 py-3 border bg-white rounded-md" />
+              <textarea
+                v-model="book.description"
+                class="w-full h-28 px-4 py-3 border bg-white rounded-md"
+              />
             </div>
 
             <div>
-              <label class="block text-xl mb-4">
-                Genres
-              </label>
+              <label class="block text-xl mb-4"> Genres </label>
 
-              <input v-model="genreSearch" class="w-full h-11 px-4 border bg-white rounded-md"
-                placeholder="Search genres..." />
+              <input
+                v-model="genreSearch"
+                class="w-full h-11 px-4 border bg-white rounded-md"
+                placeholder="Search genres..."
+              />
 
               <div class="flex flex-wrap gap-2 mt-4">
-                <span v-for="genreId in book.genres" :key="genreId" class="badge badge-neutral gap-2">
+                <span
+                  v-for="genreId in book.genres"
+                  :key="genreId"
+                  class="badge badge-neutral gap-2"
+                >
                   {{ getGenreName(genreId) }}
 
-                  <button type="button" @click="removeGenre(genreId)">
-                    ×
-                  </button>
+                  <button type="button" @click="removeGenre(genreId)">×</button>
                 </span>
               </div>
 
-              <div class="mt-4 max-h-48 overflow-y-auto border rounded-md bg-white">
-                <button v-for="genre in filteredGenres" :key="genre.id" type="button"
-                  class="w-full text-left px-4 py-2 hover:bg-gray-100" @click="toggleGenre(genre.id)">
-                  {{
-                    book.genres.includes(genre.id)
-                      ? "✓ "
-                      : ""
-                  }}
+              <div
+                class="mt-4 max-h-48 overflow-y-auto border rounded-md bg-white"
+              >
+                <button
+                  v-for="genre in filteredGenres"
+                  :key="genre.id"
+                  type="button"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  @click="toggleGenre(genre.id)"
+                >
+                  {{ book.genres.includes(genre.id) ? "✓ " : "" }}
 
                   {{ genre.name }}
                 </button>
 
-
-                <p v-if="filteredGenres.length === 0" class="px-4 py-2 text-gray-500">
+                <p
+                  v-if="filteredGenres.length === 0"
+                  class="px-4 py-2 text-gray-500"
+                >
                   No genres found
                 </p>
               </div>
 
               <label class="flex items-center gap-3 mt-5">
-                <input type="checkbox" class="checkbox checkbox-sm" v-model="showOtherGenre" />
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-sm"
+                  v-model="showOtherGenre"
+                />
 
                 Other
               </label>
 
               <div v-if="showOtherGenre" class="mt-5">
-
                 <div class="flex gap-3">
-                  <input v-model="newGenre" class="flex-1 h-11 px-4 border bg-white rounded-md"
-                    placeholder="Enter new genre..." @keyup.enter="addOtherGenre" />
+                  <input
+                    v-model="newGenre"
+                    class="flex-1 h-11 px-4 border bg-white rounded-md"
+                    placeholder="Enter new genre..."
+                    @keyup.enter="addOtherGenre"
+                  />
 
-                  <button type="button" class="btn bg-slate-800 text-white" @click="addOtherGenre">
+                  <button
+                    type="button"
+                    class="btn bg-slate-800 text-white"
+                    @click="addOtherGenre"
+                  >
                     Add
                   </button>
                 </div>
 
-
                 <div class="flex flex-wrap gap-2 mt-4">
-                  <span v-for="(genre, index) in otherGenres" :key="index" class="badge badge-neutral gap-2">
+                  <span
+                    v-for="(genre, index) in otherGenres"
+                    :key="index"
+                    class="badge badge-neutral gap-2"
+                  >
                     {{ genre }}
 
                     <button type="button" @click="removeOtherGenre(index)">
@@ -111,7 +143,6 @@
                     </button>
                   </span>
                 </div>
-
               </div>
             </div>
 
@@ -120,11 +151,13 @@
                 Cancel
               </NuxtLink>
 
-              <button class="btn bg-slate-800 text-white px-10" @click="submitBook">
+              <button
+                class="btn bg-slate-800 text-white px-10"
+                @click="submitBook"
+              >
                 Submit Book
               </button>
             </div>
-
           </div>
         </div>
       </section>
@@ -132,10 +165,13 @@
   </RoleLayout>
 </template>
 
-
 <script setup lang="ts">
 definePageMeta({
   layout: false,
+  requiresAuth: true,
+  redirectIfAuth: false,
+  middleware: "role-check",
+  allowedRoles: ["teacher"],
 });
 
 const router = useRouter();
@@ -158,8 +194,7 @@ const book = ref({
 });
 
 onMounted(async () => {
-  const { error } =
-    await bookStore.getGenres();
+  const { error } = await bookStore.getGenres();
 
   if (error) {
     console.error(error);
@@ -172,21 +207,13 @@ const filteredGenres = computed(() => {
   }
 
   return genres.value.filter((genre) =>
-    genre.name
-      .toLowerCase()
-      .includes(
-        genreSearch.value.toLowerCase(),
-      ),
+    genre.name.toLowerCase().includes(genreSearch.value.toLowerCase()),
   );
 });
 
 function toggleGenre(id: number) {
   if (book.value.genres.includes(id)) {
-
-    book.value.genres =
-      book.value.genres.filter(
-        (genreId) => genreId !== id,
-      );
+    book.value.genres = book.value.genres.filter((genreId) => genreId !== id);
 
     return;
   }
@@ -195,18 +222,11 @@ function toggleGenre(id: number) {
 }
 
 function removeGenre(id: number) {
-  book.value.genres =
-    book.value.genres.filter(
-      (genreId) => genreId !== id,
-    );
+  book.value.genres = book.value.genres.filter((genreId) => genreId !== id);
 }
 
 function getGenreName(id: number) {
-  return (
-    genres.value.find(
-      (genre) => genre.id === id,
-    )?.name ?? "Unknown"
-  );
+  return genres.value.find((genre) => genre.id === id)?.name ?? "Unknown";
 }
 
 function addOtherGenre() {
@@ -216,9 +236,7 @@ function addOtherGenre() {
     return;
   }
 
-  if (
-    !otherGenres.value.includes(genre)
-  ) {
+  if (!otherGenres.value.includes(genre)) {
     otherGenres.value.push(genre);
   }
 
@@ -230,10 +248,7 @@ function removeOtherGenre(index: number) {
 }
 
 function uploadCover(event: Event) {
-  const file =
-    (event.target as HTMLInputElement)
-      .files?.[0];
-
+  const file = (event.target as HTMLInputElement).files?.[0];
 
   if (!file) {
     return;
@@ -241,52 +256,37 @@ function uploadCover(event: Event) {
 
   coverFile.value = file;
 
-  coverPreview.value =
-    URL.createObjectURL(file);
-
+  coverPreview.value = URL.createObjectURL(file);
 }
 
 async function submitBook() {
-  if (
-    !book.value.title ||
-    !book.value.author ||
-    !book.value.description
-  ) {
+  if (!book.value.title || !book.value.author || !book.value.description) {
     alert("Please fill all fields");
     return;
   }
 
-  const selectedGenres = [
-    ...book.value.genres,
-  ];
+  const selectedGenres = [...book.value.genres];
 
   if (showOtherGenre.value) {
     for (const genreName of otherGenres.value) {
-
-      const { data, error } =
-        await bookStore.createGenre(
-          genreName,
-        );
-
+      const { data, error } = await bookStore.createGenre(genreName);
 
       if (error) {
         console.error(error);
         return;
       }
 
-
       selectedGenres.push(data.id);
     }
   }
 
-  const { error } =
-    await bookStore.createBook({
-      title: book.value.title,
-      author: book.value.author,
-      description: book.value.description,
-      genres: selectedGenres,
-      cover_image: coverFile.value,
-    });
+  const { error } = await bookStore.createBook({
+    title: book.value.title,
+    author: book.value.author,
+    description: book.value.description,
+    genres: selectedGenres,
+    cover_image: coverFile.value,
+  });
 
   if (error) {
     console.error(error);
