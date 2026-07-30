@@ -60,10 +60,10 @@ async function updateReview(data: {
         return;
     }
 
-    navigateTo("/student/reviews/my-reviews");
+    navigateTo("/student/homepage");
 }
 
 function goBack() {
-    navigateTo("/student/reviews/my-reviews");
+    navigateTo("/student/homepage");
 }
 </script>
