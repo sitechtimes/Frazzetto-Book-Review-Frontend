@@ -126,9 +126,13 @@ const filteredBooks = computed(() => {
   }
 
   if (sortOption.value === "rating") {
-    result.sort((a, b) =>
-      b.average_rating - a.average_rating
-    );
+    result.sort((a, b) => {
+      if (a.average_rating === null && b.average_rating === null) return 0;
+      if (a.average_rating === null) return 1;
+      if (b.average_rating === null) return -1;
+
+      return b.average_rating - a.average_rating;
+    });
   }
 
   return result;

@@ -6,44 +6,72 @@
           <h1 class="text-3xl font-bold text-black">
             {{ course?.name }}
           </h1>
-          <p class="text-gray-600">Period {{ course?.classPeriod }}</p>
+
+          <p class="text-gray-600">
+            Period {{ course?.period }}
+          </p>
         </div>
-        <button class="btn btn-outline">Assign +</button>
+
+        <!-- <button class="btn btn-outline">
+          Assign +
+        </button> -->
       </div>
+
 
       <div class="flex gap-8">
         <TeacherSideBar :students="course?.students ?? []" title="Students" @select="selectStudent" />
 
+
         <section class="flex-1">
           <div class="p-6">
+
             <div class="flex justify-between mb-6">
-              <h2 class="text-xl font-semibold">Reviews</h2>
+              <h2 class="text-xl font-semibold">
+                Reviews
+              </h2>
+
               <span>
                 Selected:
                 {{
                   selectedStudent
-                    ? `${selectedStudent.firstName} ${selectedStudent.lastName}`
+                    ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
                     : "All"
                 }}
               </span>
             </div>
 
+
             <div class="mb-10">
               <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-gray-700">Pending</h3>
+                <h3 class="text-gray-700">
+                  Pending
+                </h3>
+
                 <hr class="flex-1 border-gray-300" />
               </div>
+
+
               <TeacherApprovalCard v-for="review in filteredPendingReviews" :key="review.id" :review="review"
-                :show-actions="true" @approve="approveReview" @reject="rejectReview" />
+                :book="getBook(review.book_id)" :student="getStudent(review.user_id)" :show-actions="true"
+                @approve="approveReview" @reject="rejectReview" />
             </div>
+
+
 
             <div>
               <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-gray-700">Approved</h3>
+                <h3 class="text-gray-700">
+                  Approved
+                </h3>
+
                 <hr class="flex-1 border-gray-300" />
               </div>
-              <TeacherApprovalCard v-for="review in filteredApprovedReviews" :key="review.id" :review="review" />
+
+
+              <TeacherApprovalCard v-for="review in filteredApprovedReviews" :key="review.id" :review="review"
+                :book="getBook(review.book_id)" :student="getStudent(review.user_id)" />
             </div>
+
           </div>
         </section>
       </div>
@@ -51,104 +79,168 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 definePageMeta({
   layout: "teacher",
 });
 
-// emit from sidebar to get selected and replace "Selected: All" w/ the selected student name
 const route = useRoute();
 
-const courseID = route.params.courseID;
+const courseStore = useCourseStore();
+const userStore = useUserStore();
+const reviewStore = useReviewStore();
+const bookStore = useBookStore();
 
-// replace w/ API call later
-const courses = [
-  {
-    id: 1,
-    name: "AP English Literature",
-    classPeriod: 3,
-    students: students,
-  },
-];
+const course = ref<CourseWithStudents | null>(null);
 
-const course = courses.find((course) => course.id.toString() === courseID);
+const pendingReviews = ref<Review[]>([]);
+const approvedReviews = ref<Review[]>([]);
 
 const selectedStudentId = ref<number | null>(null);
+
+onMounted(async () => {
+  const courseId = Number(route.params.courseId);
+
+  const courseResult = await courseStore.getCourseById(courseId);
+
+  if (courseResult.error) {
+    console.error(courseResult.error);
+    return;
+  }
+
+  const courseData = courseResult.data;
+
+  const studentResults = await Promise.all(
+    courseData.students.map((id) =>
+      userStore.getUserById(id),
+    ),
+  );
+
+  const students: Student[] = studentResults
+    .filter(
+      (
+        result,
+      ): result is { data: User } =>
+        result.data !== undefined,
+    )
+    .map((result) => ({
+      ...result.data,
+      reviews: [],
+    }));
+
+  course.value = {
+    ...courseData,
+    students,
+  };
+
+  const pendingResult =
+    await reviewStore.getPendingReviews();
+
+  const approvedResult =
+    await reviewStore.getApprovedReviews();
+
+  if (pendingResult.error) {
+    console.error(pendingResult.error);
+    return;
+  }
+
+  if (approvedResult.error) {
+    console.error(approvedResult.error);
+    return;
+  }
+
+  pendingReviews.value =
+    pendingResult.data.filter((review) =>
+      courseData.students.includes(review.user_id),
+    );
+
+  approvedReviews.value =
+    approvedResult.data.filter((review) =>
+      courseData.students.includes(review.user_id),
+    );
+});
+
 const selectedStudent = computed(() => {
-  if (!selectedStudentId.value || !course) {
+  if (!selectedStudentId.value || !course.value) {
     return null;
   }
 
-  return course.students.find(
-    (student) => student.id === selectedStudentId.value,
+  return course.value.students.find(
+    (student) =>
+      student.id === selectedStudentId.value,
   );
 });
-
-// have to get the reviews from the course students
-const pendingReviews = [
-  {
-    id: 1,
-    bookId: 1,
-    userId: 1,
-    rating: 4,
-    headline: "This book is so good",
-    text: "u should read this book",
-    isApproved: false,
-    spoiler: false,
-    createdAt: "01/01/2026",
-    approvedAt: null,
-    updatedAt: null,
-  },
-];
-
-const approvedReviews = [
-  {
-    id: 2,
-    bookId: 2,
-    userId: 2,
-    rating: 1,
-    headline: "This book is terrible",
-    text: "Never reading this again. would not recommend",
-    isApproved: true,
-    spoiler: true,
-    createdAt: "01/31/2026",
-    approvedAt: "02/01/2026",
-    updatedAt: null,
-  },
-];
 
 const filteredPendingReviews = computed(() => {
   if (!selectedStudentId.value) {
-    return pendingReviews;
+    return pendingReviews.value;
   }
 
-  return pendingReviews.filter(
-    (review) => review.userId === selectedStudentId.value,
+  return pendingReviews.value.filter(
+    (review) =>
+      review.user_id === selectedStudentId.value,
   );
+
 });
+
 const filteredApprovedReviews = computed(() => {
   if (!selectedStudentId.value) {
-    return approvedReviews;
+    return approvedReviews.value;
   }
 
-  return approvedReviews.filter(
-    (review) => review.userId === selectedStudentId.value,
+  return approvedReviews.value.filter(
+    (review) =>
+      review.user_id === selectedStudentId.value,
   );
 });
 
-function approveReview(id: number) {
-  console.log("approve", id);
-  //backend
+function getStudent(userId: number) {
+  return (
+    course.value?.students.find(
+      (student) => student.id === userId,
+    ) ?? {
+      id: userId,
+      first_name: "Unknown",
+      last_name: "Student",
+      email: "",
+      is_student: true,
+      is_teacher: false,
+      reviews: [],
+    }
+  );
 }
 
-function rejectReview(id: number) {
-  console.log("reject", id);
-  //backend
+function getBook(bookId: number) {
+  return (
+    bookStore.books.find(
+      (book) => book.id === bookId,
+    ) ?? {
+      id: bookId,
+      title: "Unknown Book",
+      author: "Unknown Author",
+      genres: [],
+      description: "",
+      cover_image: "",
+      reviews: [],
+      average_rating: null,
+    }
+  );
 }
 
 function selectStudent(studentId: number | null) {
   selectedStudentId.value = studentId;
 }
-</script>
 
-<style scoped></style>
+function approveReview(id: number) {
+  console.log("approve", id);
+
+  // add backend endpoint later
+}
+
+function rejectReview(id: number) {
+  console.log("reject", id);
+
+  // add backend endpoint later
+}
+</script>
