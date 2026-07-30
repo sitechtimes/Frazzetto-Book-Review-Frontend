@@ -150,6 +150,38 @@ export const useReviewStore = defineStore("reviewStore", () => {
     return { data: null };
   }
 
+  async function getPendingReviews(): Promise<Result<Review[], Error>> {
+    const { data, error } = await tryRequestEndpoint<Review[]>(
+      "/books/reviews/pending",
+      "GET",
+      {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    return { data };
+  }
+
+  async function getApprovedReviews(): Promise<Result<Review[], Error>> {
+    const { data, error } = await tryRequestEndpoint<Review[]>(
+      "/books/reviews/approved",
+      "GET",
+      {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    return { data };
+  }
+
   return {
     reviews,
     selectedBookReviews,
@@ -160,5 +192,7 @@ export const useReviewStore = defineStore("reviewStore", () => {
     getReviewById,
     updateReview,
     deleteReview,
+    getPendingReviews,
+    getApprovedReviews,
   };
 });

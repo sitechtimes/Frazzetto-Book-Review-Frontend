@@ -5,27 +5,18 @@
     </h2>
 
     <div class="space-y-2">
-      <button
-        class="w-full text-left px-4 py-2 rounded-lg transition"
-        :class="{
-          'bg-neutral-300': selectedStudent === null,
-          'hover:bg-gray-200': selectedStudent !== null,
-        }"
-        @click="selectStudent(null)"
-      >
+      <button class="w-full text-left px-4 py-2 rounded-lg transition" :class="{
+        'bg-neutral-300': selectedStudent === null,
+        'hover:bg-gray-200': selectedStudent !== null,
+      }" @click="selectStudent(null)">
         All
       </button>
 
-      <button
-        v-for="student in students"
-        :key="student.id"
-        class="w-full text-left px-4 py-2 rounded-lg transition hover:bg-gray-200"
-        :class="{
+      <button v-for="student in students" :key="student.id"
+        class="w-full text-left px-4 py-2 rounded-lg transition hover:bg-gray-200" :class="{
           'bg-neutral-300': selectedStudent === student.id,
-        }"
-        @click="selectStudent(student.id)"
-      >
-        {{ student.firstName }} {{ student.lastName }}
+        }" @click="selectStudent(student.id)">
+        {{ student.first_name }} {{ student.last_name }}
       </button>
     </div>
   </aside>

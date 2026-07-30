@@ -26,26 +26,15 @@ definePageMeta({
   allowedRoles: ["teacher"],
 });
 
-const classes: Course[] = [
-  {
-    id: 1,
-    name: "English Literature",
-    classPeriod: "1",
-    students: [],
-  },
-  {
-    id: 2,
-    name: "AP English Literature",
-    classPeriod: "2",
-    students: [],
-  },
-  {
-    id: 3,
-    name: "Creative Writing",
-    classPeriod: "3",
-    students: [],
-  },
-];
-</script>
+const courseStore = useCourseStore();
 
-<style scoped></style>
+const classes = computed(() => courseStore.courses);
+
+onMounted(async () => {
+  const { error } = await courseStore.getAllCourses();
+
+  if (error) {
+    console.error(error);
+  }
+});
+</script>

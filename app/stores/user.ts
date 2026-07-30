@@ -79,6 +79,29 @@ export const useUserStore = defineStore("userStore", () => {
     return { data };
   }
 
+  async function getUserById(id: number): Promise<Result<User, Error>> {
+    if (!token.value) {
+      return {
+        error: new Error("Not authenticated"),
+      };
+    }
+
+    const { data, error } = await tryRequestEndpoint<User>(
+      `/users/${id}/`,
+      "GET",
+      {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`,
+      },
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    return { data };
+  }
+
   async function signIn(
     email: string,
     pin: string,
@@ -176,6 +199,7 @@ export const useUserStore = defineStore("userStore", () => {
     signIn,
     signOut,
     getUserData,
+    getUserById,
     loadSession,
     reloadAccess,
   };
