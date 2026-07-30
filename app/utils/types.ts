@@ -54,3 +54,12 @@ export interface CourseWithStudents {
   period: string;
   students: Student[];
 }
+
+export type CreateReview = {
+  book_id: number;
+  user_id: number;
+  rating: number;
+  headline: string;
+  comment: string;
+  spoiler: boolean;
+};

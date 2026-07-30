@@ -46,9 +46,7 @@ export const useReviewStore = defineStore("reviewStore", () => {
     user_id: number,
   ): Promise<Result<Review[], Error>> {
     const userStore = useUserStore();
-
     const { token } = storeToRefs(userStore);
-
     const { data, error } = await tryRequestEndpoint<Review[]>(
       `/books/reviews/user/${user_id}`,
       "GET",
@@ -85,6 +83,35 @@ export const useReviewStore = defineStore("reviewStore", () => {
     return { data };
   }
 
+  async function createReview(reviewData: {
+    book_id: number;
+    user_id: number;
+    rating: number;
+    headline: string;
+    comment: string;
+    spoiler: boolean;
+  }): Promise<Result<Review, Error>> {
+    const userStore = useUserStore();
+    const { token } = storeToRefs(userStore);
+    const { data, error } = await tryRequestEndpoint<Review>(
+      `/books/review/create`,
+      "POST",
+      {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`,
+      },
+      reviewData,
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    selectedReview.value = data;
+
+    return { data };
+  }
+
   async function updateReview(
     review_id: number,
     reviewData: {
@@ -97,9 +124,7 @@ export const useReviewStore = defineStore("reviewStore", () => {
     },
   ): Promise<Result<Review, Error>> {
     const userStore = useUserStore();
-
     const { token } = storeToRefs(userStore);
-
     const { data, error } = await tryRequestEndpoint<Review>(
       `/books/review/update/${review_id}`,
       "PUT",
@@ -121,9 +146,7 @@ export const useReviewStore = defineStore("reviewStore", () => {
 
   async function deleteReview(review_id: number): Promise<Result<null, Error>> {
     const userStore = useUserStore();
-
     const { token } = storeToRefs(userStore);
-
     const { error } = await tryRequestEndpoint<null>(
       `/books/review/delete/${review_id}`,
       "DELETE",
@@ -151,11 +174,15 @@ export const useReviewStore = defineStore("reviewStore", () => {
   }
 
   async function getPendingReviews(): Promise<Result<Review[], Error>> {
+    const userStore = useUserStore();
+    const { token } = storeToRefs(userStore);
+
     const { data, error } = await tryRequestEndpoint<Review[]>(
       "/books/reviews/pending",
       "GET",
       {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`,
       },
     );
 
@@ -167,11 +194,14 @@ export const useReviewStore = defineStore("reviewStore", () => {
   }
 
   async function getApprovedReviews(): Promise<Result<Review[], Error>> {
+    const userStore = useUserStore();
+    const { token } = storeToRefs(userStore);
     const { data, error } = await tryRequestEndpoint<Review[]>(
       "/books/reviews/approved",
       "GET",
       {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`,
       },
     );
 
@@ -182,17 +212,74 @@ export const useReviewStore = defineStore("reviewStore", () => {
     return { data };
   }
 
+  async function approveReview(
+    review_id: number,
+    is_approved: boolean,
+    review: Review,
+  ): Promise<Result<Review, Error>> {
+    const userStore = useUserStore();
+    const { token } = storeToRefs(userStore);
+
+    const { data, error } = await tryRequestEndpoint<Review>(
+      `/books/review/approve/${review_id}`,
+      "POST",
+      {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.value}`,
+      },
+      {
+        book_id: review.book_id,
+        user_id: review.user_id,
+        rating: review.rating,
+        headline: review.headline,
+        comment: review.comment,
+        spoiler: review.spoiler,
+        is_approved,
+      },
+    );
+
+    if (error) {
+      return { error };
+    }
+
+    const updatedReview = data ?? {
+      ...review,
+      is_approved,
+    };
+
+    reviews.value = reviews.value.map((item) =>
+      item.id === review_id ? updatedReview : item,
+    );
+
+    selectedBookReviews.value = selectedBookReviews.value.map((item) =>
+      item.id === review_id ? updatedReview : item,
+    );
+
+    selectedUserReviews.value = selectedUserReviews.value.map((item) =>
+      item.id === review_id ? updatedReview : item,
+    );
+
+    if (selectedReview.value?.id === review_id) {
+      selectedReview.value = updatedReview;
+    }
+
+    return { data: updatedReview };
+  }
+
   return {
     reviews,
     selectedBookReviews,
     selectedUserReviews,
+    selectedReview,
     getAllReviews,
     getReviewByBookId,
     getReviewsByStudentId,
     getReviewById,
+    createReview,
     updateReview,
     deleteReview,
     getPendingReviews,
     getApprovedReviews,
+    approveReview,
   };
 });
