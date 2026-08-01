@@ -10,18 +10,17 @@
 
             <p class="text-gray-600">Period {{ course?.period }}</p>
           </div>
-
           <div role="tablist" class="tabs tabs-border">
             <NuxtLink
               :to="`/teacher/classes/${course?.id}`"
               role="tab"
-              class="tab tab-active"
+              class="tab"
               >Reviews</NuxtLink
             >
             <NuxtLink
               :to="`/teacher/classes/book-submissions/${course?.id}`"
               role="tab"
-              class="tab"
+              class="tab tab-active"
               >Book Submissions</NuxtLink
             >
           </div>
@@ -37,7 +36,7 @@
           <section class="flex-1">
             <div class="p-6">
               <div class="flex justify-between mb-6">
-                <h2 class="text-xl font-semibold">Reviews</h2>
+                <h2 class="text-xl font-semibold">Pending Books</h2>
 
                 <span>
                   Selected:
@@ -49,39 +48,29 @@
                 </span>
               </div>
 
-              <div class="mb-10">
-                <div class="flex items-center gap-3 mb-4">
-                  <h3 class="text-gray-700">Pending</h3>
+              <!-- <TeacherBookApprovalCard
+                v-for="submission in filteredPendingSubmissions"
+                :key="submission.id"
+                :submission="submission"
+                :student="getStudent(submission.submitted_by)"
+                :show-actions="true"
+                @approve="approveSubmission"
+                @reject="rejectSubmission"
+              /> -->
 
-                  <hr class="flex-1 border-gray-300" />
-                </div>
-
-                <TeacherApprovalCard
-                  v-for="review in filteredPendingReviews"
-                  :key="review.id"
-                  :review="review"
-                  :book="getBook(review.book_id)"
-                  :student="getStudent(review.user_id)"
-                  :show-actions="true"
-                  @approve="approveReview"
-                  @reject="rejectReview"
-                />
-              </div>
-
-              <div>
+              <div class="mt-10">
                 <div class="flex items-center gap-3 mb-4">
                   <h3 class="text-gray-700">Approved</h3>
 
                   <hr class="flex-1 border-gray-300" />
                 </div>
 
-                <TeacherApprovalCard
-                  v-for="review in filteredApprovedReviews"
-                  :key="review.id"
-                  :review="review"
-                  :book="getBook(review.book_id)"
-                  :student="getStudent(review.user_id)"
-                />
+                <!-- <TeacherBookApprovalCard
+                  v-for="submission in filteredApprovedSubmissions"
+                  :key="submission.id"
+                  :submission="submission"
+                  :student="getStudent(submission.submitted_by)"
+                /> -->
               </div>
             </div>
           </section>
@@ -97,20 +86,19 @@ definePageMeta({
   requiresAuth: true,
   redirectIfAuth: false,
   middleware: "role-check",
-  allowedRoles: ["student", "teacher"],
+  allowedRoles: ["teacher"],
 });
 
 const route = useRoute();
 
 const courseStore = useCourseStore();
 const userStore = useUserStore();
-const reviewStore = useReviewStore();
-const bookStore = useBookStore();
+//const submissionStore = useBookSubmissionStore();
 
 const course = ref<CourseWithStudents | null>(null);
 
-const pendingReviews = ref<Review[]>([]);
-const approvedReviews = ref<Review[]>([]);
+//const pendingSubmissions = ref<BookSubmission[]>([]);
+//const approvedSubmissions = ref<BookSubmission[]>([]);
 
 const selectedStudentId = ref<number | null>(null);
 
@@ -125,8 +113,6 @@ onMounted(async () => {
   }
 
   const courseData = courseResult.data;
-
-  await bookStore.getAllBooks();
 
   const studentResults = await Promise.all(
     courseData.students.map((id) => userStore.getUserById(id)),
@@ -144,9 +130,8 @@ onMounted(async () => {
     students,
   };
 
-  const pendingResult = await reviewStore.getPendingReviews();
-
-  const approvedResult = await reviewStore.getApprovedReviews();
+  /* const pendingResult = await submissionStore.getPendingSubmissions();
+  const approvedResult = await submissionStore.getApprovedSubmissions();
 
   if (pendingResult.error) {
     console.error(pendingResult.error);
@@ -158,13 +143,13 @@ onMounted(async () => {
     return;
   }
 
-  pendingReviews.value = pendingResult.data.filter((review) =>
-    courseData.students.includes(review.user_id),
+  pendingSubmissions.value = pendingResult.data.filter((submission) =>
+    courseData.students.includes(submission.submitted_by),
   );
 
-  approvedReviews.value = approvedResult.data.filter((review) =>
-    courseData.students.includes(review.user_id),
-  );
+  approvedSubmissions.value = approvedResult.data.filter((submission) =>
+    courseData.students.includes(submission.submitted_by),
+  ); */
 });
 
 const selectedStudent = computed(() => {
@@ -177,25 +162,29 @@ const selectedStudent = computed(() => {
   );
 });
 
-const filteredPendingReviews = computed(() => {
+/* const filteredPendingSubmissions = computed(() => {
   if (!selectedStudentId.value) {
-    return pendingReviews.value;
+    return pendingSubmissions.value;
   }
 
-  return pendingReviews.value.filter(
-    (review) => review.user_id === selectedStudentId.value,
+  return pendingSubmissions.value.filter(
+    (submission) => submission.submitted_by === selectedStudentId.value,
   );
 });
 
-const filteredApprovedReviews = computed(() => {
+const filteredApprovedSubmissions = computed(() => {
   if (!selectedStudentId.value) {
-    return approvedReviews.value;
+    return approvedSubmissions.value;
   }
 
-  return approvedReviews.value.filter(
-    (review) => review.user_id === selectedStudentId.value,
+  return approvedSubmissions.value.filter(
+    (submission) => submission.submitted_by === selectedStudentId.value,
   );
-});
+}); */
+
+function selectStudent(studentId: number | null) {
+  selectedStudentId.value = studentId;
+}
 
 function getStudent(userId: number) {
   return (
@@ -211,55 +200,34 @@ function getStudent(userId: number) {
   );
 }
 
-function getBook(bookId: number) {
-  return (
-    bookStore.books.find((book) => book.id === bookId) ?? {
-      id: bookId,
-      title: "Unknown Book",
-      author: "Unknown Author",
-      genres: [],
-      description: "",
-      cover_image: "",
-      reviews: [],
-      average_rating: null,
-    }
-  );
-}
-
-function selectStudent(studentId: number | null) {
-  selectedStudentId.value = studentId;
-}
-
-async function approveReview(review: Review) {
-  const { error } = await reviewStore.approveReview(review.id, true, review);
+/* async function approveSubmission(submission: BookSubmission) {
+  const { error } = await submissionStore.approveSubmission(submission.id);
 
   if (error) {
-    console.error("Failed to approve review:", error);
+    console.error("Failed to approve submission:", error);
     return;
   }
 
-  const approvedReview = {
-    ...review,
-    is_approved: true,
-  };
-
-  pendingReviews.value = pendingReviews.value.filter(
-    (item) => item.id !== review.id,
+  pendingSubmissions.value = pendingSubmissions.value.filter(
+    (item) => item.id !== submission.id,
   );
 
-  approvedReviews.value.push(approvedReview);
+  approvedSubmissions.value.push({
+    ...submission,
+    status: "approved",
+  });
 }
 
-async function rejectReview(review: Review) {
-  const { error } = await reviewStore.approveReview(review.id, false, review);
+async function rejectSubmission(submission: BookSubmission) {
+  const { error } = await submissionStore.rejectSubmission(submission.id);
 
   if (error) {
-    console.error("Failed to reject review:", error);
+    console.error("Failed to reject submission:", error);
     return;
   }
 
-  pendingReviews.value = pendingReviews.value.filter(
-    (item) => item.id !== review.id,
+  pendingSubmissions.value = pendingSubmissions.value.filter(
+    (item) => item.id !== submission.id,
   );
-}
+} */
 </script>

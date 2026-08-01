@@ -56,7 +56,6 @@
         </div>
 
         <NuxtLink
-          v-if="currentUser?.is_teacher"
           to="/books/add"
           class="fixed bottom-10 right-10 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl hover:bg-gray-100 transition"
         >
