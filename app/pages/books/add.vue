@@ -169,7 +169,7 @@
 definePageMeta({
   layout: false,
   requiresAuth: true,
-  redirectIfAuth: false
+  redirectIfAuth: false,
 });
 
 const router = useRouter();
@@ -285,6 +285,8 @@ async function submitBook() {
     genres: selectedGenres,
     cover_image: coverFile.value,
   });
+
+  //add logic here to add book to pending approval if submitted by student
 
   if (error) {
     console.error(error);

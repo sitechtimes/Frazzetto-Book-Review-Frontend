@@ -48,15 +48,15 @@
                 </span>
               </div>
 
-              <!-- <TeacherBookApprovalCard
+              <TeacherBookApprovalCard
                 v-for="submission in filteredPendingSubmissions"
                 :key="submission.id"
                 :submission="submission"
-                :student="getStudent(submission.submitted_by)"
+                :student="getStudent(submission.user_id)"
                 :show-actions="true"
                 @approve="approveSubmission"
                 @reject="rejectSubmission"
-              /> -->
+              />
 
               <div class="mt-10">
                 <div class="flex items-center gap-3 mb-4">
@@ -65,12 +65,12 @@
                   <hr class="flex-1 border-gray-300" />
                 </div>
 
-                <!-- <TeacherBookApprovalCard
+                <TeacherBookApprovalCard
                   v-for="submission in filteredApprovedSubmissions"
                   :key="submission.id"
                   :submission="submission"
-                  :student="getStudent(submission.submitted_by)"
-                /> -->
+                  :student="getStudent(submission.user_id)"
+                />
               </div>
             </div>
           </section>

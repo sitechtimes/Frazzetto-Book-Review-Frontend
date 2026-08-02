@@ -41,6 +41,13 @@ export interface Review {
   updated_at: string | null;
 }
 
+export interface BookSubmission extends Book {
+  user_id: number;
+  is_approved: boolean;
+  submitted_at: string;
+  approved_at: string | null;
+}
+
 export interface Course {
   id: number;
   name: string;
