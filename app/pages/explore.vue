@@ -31,8 +31,12 @@
 
         <div
           v-if="showGenres"
-          class="flex flex-wrap justify-center gap-3 mb-10"
+          class="flex flex-wrap justify-center items-center gap-3 mb-10"
         >
+          <button class="btn btn-md bg-gray-300" @click="selectedGenres = []">
+            Clear
+          </button>
+
           <label
             v-for="genre in genres"
             :key="genre.id"
