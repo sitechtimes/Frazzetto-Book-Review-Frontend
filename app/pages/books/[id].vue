@@ -194,6 +194,6 @@ function writeReview() {
     return;
   }
 
-  navigateTo(`/student/reviews/write/${book.value.id}`);
+  navigateTo(`/reviews/write/${book.value.id}`);
 }
 </script>
