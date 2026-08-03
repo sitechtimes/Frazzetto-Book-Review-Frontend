@@ -80,8 +80,6 @@ definePageMeta({
 const userStore = useUserStore();
 const bookStore = useBookStore();
 
-const currentUser = computed(() => userStore.user);
-
 const search = ref("");
 const sortOption = ref("");
 const showGenres = ref(false);

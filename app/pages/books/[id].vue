@@ -5,10 +5,17 @@
         <div class="grid grid-cols-[280px_1fr] gap-16">
           <div class="flex flex-col items-center">
             <div class="w-64 h-96 bg-gray-300 rounded overflow-hidden">
-              <img :src="book.cover_image" :alt="book.title" class="w-full h-full object-contain" />
+              <img
+                :src="book.cover_image"
+                :alt="book.title"
+                class="w-full h-full object-contain"
+              />
             </div>
 
-            <button class="btn bg-slate-800 text-white px-10 mt-8 hover:bg-slate-900" @click="writeReview">
+            <button
+              class="btn bg-slate-800 text-white px-10 mt-8 hover:bg-slate-900"
+              @click="writeReview"
+            >
               Write Review
             </button>
           </div>
@@ -23,12 +30,14 @@
             </p>
 
             <div>
-              <h2 class="text-xl font-semibold mb-3">
-                Genres
-              </h2>
+              <h2 class="text-xl font-semibold mb-3">Genres</h2>
 
               <div class="flex flex-wrap gap-3">
-                <span v-for="genre in book.genres" :key="genre.id" class="px-4 py-1 bg-gray-200 rounded-full text-sm">
+                <span
+                  v-for="genre in book.genres"
+                  :key="genre.id"
+                  class="px-4 py-1 bg-gray-200 rounded-full text-sm"
+                >
                   {{ genre.name }}
                 </span>
               </div>
@@ -39,19 +48,26 @@
 
               <div class="flex items-center gap-3">
                 <div class="flex">
-                  <span v-for="(percentage, index) in stars" :key="index"
-                    class="relative inline-block text-3xl leading-none">
+                  <span
+                    v-for="(percentage, index) in stars"
+                    :key="index"
+                    class="relative inline-block text-3xl leading-none"
+                  >
                     <span class="text-gray-300"> ★ </span>
 
-                    <span class="absolute left-0 top-0 overflow-hidden text-yellow-400"
-                      :style="{ width: `${percentage}%` }">
+                    <span
+                      class="absolute left-0 top-0 overflow-hidden text-yellow-400"
+                      :style="{ width: `${percentage}%` }"
+                    >
                       ★
                     </span>
                   </span>
                 </div>
 
                 <span class="text-lg text-gray-700">
-                  {{ book.average_rating ? book.average_rating.toFixed(1) : "0.0" }}
+                  {{
+                    book.average_rating ? book.average_rating.toFixed(1) : "0.0"
+                  }}
 
                   <a href="#reviews" class="hover:underline cursor-pointer">
                     ({{ approvedReviews.length }} reviews)
@@ -71,12 +87,29 @@
         </div>
 
         <section id="reviews" class="mt-16">
-          <h2 class="text-3xl font-bold mb-8">Reviews</h2>
+          <div class="flex flex-row">
+            <h2 class="text-3xl font-bold mb-8">Reviews</h2>
+            <select v-model="sortOption" class="select select-bordered ml-10">
+              <option value="">Sort by:</option>
+
+              <option value="date">Newest</option>
+
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
 
           <div class="space-y-6">
-            <ReviewCard v-for="review in approvedReviews" :key="review.id" :book="book" :review="review" />
+            <ReviewCard
+              v-for="review in approvedReviews"
+              :key="review.id"
+              :book="book"
+              :review="review"
+            />
 
-            <p v-if="approvedReviews.length === 0" class="text-lg text-gray-600">
+            <p
+              v-if="approvedReviews.length === 0"
+              class="text-lg text-gray-600"
+            >
               No reviews yet. Be the first to write one!
             </p>
           </div>
@@ -102,6 +135,8 @@ const bookStore = useBookStore();
 
 const book = computed(() => bookStore.selectedBook);
 
+const sortOption = ref("");
+
 onMounted(async () => {
   const id = Number(route.params.id);
 
@@ -117,9 +152,19 @@ const approvedReviews = computed(() => {
     return [];
   }
 
-  return book.value.reviews.filter(
-    (review) => review.is_approved,
-  );
+  const reviews = book.value.reviews.filter((review) => review.is_approved);
+
+  if (sortOption.value === "date") {
+    reviews.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+  }
+
+  if (sortOption.value === "rating") {
+    reviews.sort((a, b) => b.rating - a.rating);
+  }
+  return reviews;
 });
 
 const stars = computed(() => {
@@ -143,7 +188,6 @@ const stars = computed(() => {
     return 0;
   });
 });
-
 
 function writeReview() {
   if (!book.value) {
