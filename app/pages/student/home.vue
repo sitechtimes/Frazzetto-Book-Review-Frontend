@@ -55,7 +55,7 @@ onMounted(async () => {
 
   await Promise.all([
     bookStore.getAllBooks(),
-    reviewStore.getReviewsByStudentId(user.value.id),
+    reviewStore.getReviewsByUserId(user.value.id),
   ]);
 });
 
@@ -91,7 +91,7 @@ async function confirmDelete() {
   }
 
   if (user.value) {
-    await reviewStore.getReviewsByStudentId(user.value.id);
+    await reviewStore.getReviewsByUserId(user.value.id);
   }
 
   showDeleteModal.value = false;

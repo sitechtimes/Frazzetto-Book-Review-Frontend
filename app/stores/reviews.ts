@@ -42,7 +42,7 @@ export const useReviewStore = defineStore("reviewStore", () => {
     return { data };
   }
 
-  async function getReviewsByStudentId(
+  async function getReviewsByUserId(
     user_id: number,
   ): Promise<Result<Review[], Error>> {
     const userStore = useUserStore();
@@ -273,7 +273,7 @@ export const useReviewStore = defineStore("reviewStore", () => {
     selectedReview,
     getAllReviews,
     getReviewByBookId,
-    getReviewsByStudentId,
+    getReviewsByUserId,
     getReviewById,
     createReview,
     updateReview,

@@ -3,16 +3,57 @@
     <section class="max-w-5xl mx-auto px-10 py-14">
       <h1 class="text-4xl font-bold text-center mb-12">My Reviews</h1>
 
-      <div v-if="selectedUserReviews.length" class="space-y-6">
-        <ReviewCard
-          v-for="review in selectedUserReviews"
-          :key="review.id"
-          :review="review"
-          :book="getBook(review.book_id)"
-          :show-actions="true"
-          @edit="editReview"
-          @delete="deleteReview"
-        />
+      <div v-if="selectedUserReviews.length">
+        <div class="mb-10">
+          <div class="flex items-center gap-3 mb-4">
+            <h2 class="text-xl font-semibold text-gray-700">Pending</h2>
+
+            <hr class="flex-1 border-gray-300" />
+          </div>
+
+          <div class="space-y-6">
+            <TeacherReviewCard
+              v-for="review in pendingReviews"
+              :key="review.id"
+              :review="review"
+              :book="getBook(review.book_id)"
+              :show-actions="true"
+              :show-approval-actions="true"
+              @edit="editReview"
+              @delete="deleteReview"
+              @approve="approveReview"
+              @reject="rejectReview"
+            />
+
+            <p v-if="pendingReviews.length === 0" class="text-gray-500">
+              No pending reviews.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <h2 class="text-xl font-semibold text-gray-700">Approved</h2>
+
+            <hr class="flex-1 border-gray-300" />
+          </div>
+
+          <div class="space-y-6">
+            <TeacherReviewCard
+              v-for="review in approvedReviews"
+              :key="review.id"
+              :review="review"
+              :book="getBook(review.book_id)"
+              :show-actions="true"
+              @edit="editReview"
+              @delete="deleteReview"
+            />
+
+            <p v-if="approvedReviews.length === 0" class="text-gray-500">
+              No approved reviews.
+            </p>
+          </div>
+        </div>
       </div>
 
       <p v-else class="text-center text-gray-500">
@@ -55,7 +96,7 @@ onMounted(async () => {
 
   await Promise.all([
     bookStore.getAllBooks(),
-    reviewStore.getReviewsByStudentId(user.value.id),
+    reviewStore.getReviewsByUserId(user.value.id),
   ]);
 });
 
@@ -91,7 +132,7 @@ async function confirmDelete() {
   }
 
   if (user.value) {
-    await reviewStore.getReviewsByStudentId(user.value.id);
+    await reviewStore.getReviewsByUserId(user.value.id);
   }
 
   showDeleteModal.value = false;
@@ -102,4 +143,40 @@ function cancelDelete() {
   showDeleteModal.value = false;
   reviewToDelete.value = null;
 }
+
+async function approveReview(review: Review) {
+  const { error } = await reviewStore.approveReview(review.id, true, review);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (user.value) {
+    await reviewStore.getReviewsByUserId(user.value.id);
+  }
+}
+
+async function rejectReview(review: Review) {
+  const { error } = await reviewStore.approveReview(review.id, false, review);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  if (user.value) {
+    await reviewStore.getReviewsByUserId(user.value.id);
+  }
+}
+
+const pendingReviews = computed(() =>
+  selectedUserReviews.value.filter(
+    (review) => review.is_approved === null || review.is_approved === false,
+  ),
+);
+
+const approvedReviews = computed(() =>
+  selectedUserReviews.value.filter((review) => review.is_approved === true),
+);
 </script>

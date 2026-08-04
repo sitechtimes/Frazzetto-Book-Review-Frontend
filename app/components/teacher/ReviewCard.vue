@@ -6,8 +6,8 @@
     >
       <p class="font-semibold text-red-800">This review was rejected.</p>
       <p class="mt-1 text-sm text-red-700">
-        It is not visible to other students. You can edit your review and
-        resubmit it for approval.
+        It is not visible to other users. You can edit your review and resubmit
+        it for approval.
       </p>
     </div>
     <div class="flex justify-between gap-8">
@@ -76,20 +76,45 @@
       </div>
     </div>
 
-    <div v-if="showActions" class="flex justify-end gap-4 mt-6">
-      <button
-        class="btn bg-white border border-gray-300 text-gray-800 px-8"
-        @click="emit('edit', review)"
-      >
-        Edit
-      </button>
+    <div
+      v-if="showApprovalActions || showActions"
+      class="flex items-center justify-between mt-6"
+    >
+      <div class="flex gap-2">
+        <button
+          v-if="showApprovalActions"
+          class="btn w-28 bg-white border border-gray-300 text-black hover:bg-gray-100"
+          @click="emit('reject', review)"
+        >
+          Reject
+        </button>
 
-      <button
-        class="btn bg-red-600 text-white px-8 hover:bg-red-700"
-        @click="emit('delete', review.id)"
-      >
-        Delete
-      </button>
+        <button
+          v-if="showApprovalActions"
+          class="btn w-28 bg-white border border-gray-300 text-black hover:bg-gray-100"
+          @click="emit('approve', review)"
+        >
+          Approve
+        </button>
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          v-if="showActions"
+          class="btn w-28 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100"
+          @click="emit('edit', review)"
+        >
+          Edit
+        </button>
+
+        <button
+          v-if="showActions"
+          class="btn w-28 bg-red-600 text-white hover:bg-red-700"
+          @click="emit('delete', review.id)"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -101,16 +126,20 @@ withDefaults(
     review: Review;
     showActions?: boolean;
     showBookInfo?: boolean;
+    showApprovalActions?: boolean;
   }>(),
   {
     showActions: false,
     showBookInfo: true,
+    showApprovalActions: false,
   },
 );
 
 const emit = defineEmits<{
   edit: [review: Review];
   delete: [id: number];
+  approve: [review: Review];
+  reject: [review: Review];
 }>();
 
 const showSpoiler = ref(false);
