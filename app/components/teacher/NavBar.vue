@@ -16,6 +16,13 @@
           Home
         </NuxtLink>
         <NuxtLink
+          to="/teacher/my-reviews"
+          class="btn btn-ghost"
+          active-class="bg-base-200"
+        >
+          My Reviews
+        </NuxtLink>
+        <NuxtLink
           to="/explore"
           class="btn btn-ghost"
           active-class="bg-base-200"
