@@ -3,7 +3,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore();
 
   const getHomeRoute = () =>
-    userStore.user?.is_teacher ? "/teacher/classes" : "/student/homepage";
+    userStore.user?.is_teacher ? "/teacher/classes" : "/student/home";
 
   // redirect /teacher/home to /teacher/classes
   if (to.path === "/teacher/home") {

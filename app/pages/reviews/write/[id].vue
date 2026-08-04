@@ -6,7 +6,7 @@
       @submit="submitReview"
       @cancel="cancel"
     />
-
+    <!-- what happens if a teacher writes a review -->
     <div v-else class="min-h-screen flex items-center justify-center">
       <h1 class="text-3xl font-bold">Book not found</h1>
     </div>

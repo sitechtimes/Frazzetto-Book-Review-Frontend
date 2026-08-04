@@ -1,53 +1,58 @@
 <template>
-  <RoleLayout>
-    <div class="min-h-screen bg-base-200">
-      <main class="max-w-6xl mx-auto py-12">
-        <div class="flex justify-between items-center mb-8">
-          <div>
-            <h1 class="text-3xl font-bold text-black">
-              {{ course?.name }}
-            </h1>
+  <div class="min-h-screen bg-base-200">
+    <main class="max-w-6xl mx-auto py-12">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-black">
+            {{ course?.name }}
+          </h1>
 
-            <p class="text-gray-600">Period {{ course?.period }}</p>
-          </div>
-          <div role="tablist" class="tabs tabs-border">
-            <NuxtLink
-              :to="`/teacher/classes/${course?.id}`"
-              role="tab"
-              class="tab"
-              >Reviews</NuxtLink
-            >
-            <NuxtLink
-              :to="`/teacher/classes/book-submissions/${course?.id}`"
-              role="tab"
-              class="tab tab-active"
-              >Book Submissions</NuxtLink
-            >
-          </div>
+          <p class="text-gray-600">Period {{ course?.period }}</p>
         </div>
+        <div role="tablist" class="tabs tabs-border">
+          <NuxtLink
+            :to="`/teacher/classes/${course?.id}`"
+            role="tab"
+            class="tab"
+            >Reviews</NuxtLink
+          >
+          <NuxtLink
+            :to="`/teacher/classes/book-submissions/${course?.id}`"
+            role="tab"
+            class="tab tab-active"
+            >Book Submissions</NuxtLink
+          >
+        </div>
+      </div>
 
-        <div class="flex gap-8">
-          <TeacherSideBar
-            :students="course?.students ?? []"
-            title="Students"
-            @select="selectStudent"
-          />
+      <div class="flex gap-8">
+        <TeacherSideBar
+          :students="course?.students ?? []"
+          title="Students"
+          @select="selectStudent"
+        />
 
-          <section class="flex-1">
-            <div class="p-6">
-              <div class="flex justify-between mb-6">
-                <h2 class="text-xl font-semibold">Pending Books</h2>
+        <section class="flex-1">
+          <div class="p-6">
+            <div class="flex justify-between mb-6">
+              <h2 class="text-xl font-semibold">Books</h2>
 
-                <span>
-                  Selected:
-                  {{
-                    selectedStudent
-                      ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
-                      : "All"
-                  }}
-                </span>
+              <span>
+                Selected:
+                {{
+                  selectedStudent
+                    ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
+                    : "All"
+                }}
+              </span>
+            </div>
+
+            <div class="mb-10">
+              <div class="flex items-center gap-3 mb-4">
+                <h3 class="text-gray-700">Pending</h3>
+
+                <hr class="flex-1 border-gray-300" />
               </div>
-
               <TeacherBookApprovalCard
                 v-for="submission in filteredPendingSubmissions"
                 :key="submission.id"
@@ -57,27 +62,27 @@
                 @approve="approveSubmission"
                 @reject="rejectSubmission"
               />
-
-              <div class="mt-10">
-                <div class="flex items-center gap-3 mb-4">
-                  <h3 class="text-gray-700">Approved</h3>
-
-                  <hr class="flex-1 border-gray-300" />
-                </div>
-
-                <TeacherBookApprovalCard
-                  v-for="submission in filteredApprovedSubmissions"
-                  :key="submission.id"
-                  :submission="submission"
-                  :student="getStudent(submission.user_id)"
-                />
-              </div>
             </div>
-          </section>
-        </div>
-      </main>
-    </div>
-  </RoleLayout>
+
+            <div class="mt-10">
+              <div class="flex items-center gap-3 mb-4">
+                <h3 class="text-gray-700">Approved</h3>
+
+                <hr class="flex-1 border-gray-300" />
+              </div>
+
+              <TeacherBookApprovalCard
+                v-for="submission in filteredApprovedSubmissions"
+                :key="submission.id"
+                :submission="submission"
+                :student="getStudent(submission.user_id)"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">

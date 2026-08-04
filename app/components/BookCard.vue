@@ -2,7 +2,10 @@
   <div
     class="group flex flex-col transition-transform duration-200 hover:-translate-y-1"
   >
-    <div class="aspect-2/3 w-full overflow-hidden bg-base-200">
+    <NuxtLink
+      :to="`/books/${book.id}`"
+      class="aspect-2/3 w-full overflow-hidden bg-base-200"
+    >
       <img
         v-if="book.cover_image"
         :src="book.cover_image"
@@ -16,7 +19,7 @@
       >
         No Cover
       </div>
-    </div>
+    </NuxtLink>
 
     <div class="mt-4 space-y-2">
       <div class="font-semibold text-base leading-tight hover:underline">

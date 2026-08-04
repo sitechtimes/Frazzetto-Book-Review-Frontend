@@ -1,8 +1,12 @@
 <template>
-    <StudentWriteReview v-if="review && book" :book="book" :initial-review="review" @submit="updateReview"
-        @cancel="goBack" />
+  <StudentWriteReview
+    v-if="review && book"
+    :book="book"
+    :initial-review="review"
+    @submit="updateReview"
+    @cancel="goBack"
+  />
 </template>
-
 
 <script setup lang="ts">
 const route = useRoute();
@@ -15,55 +19,51 @@ const review = ref<Review | null>(null);
 
 const book = computed(() => bookStore.selectedBook);
 
-
 onMounted(async () => {
-    await userStore.loadSession();
+  await userStore.loadSession();
 
-    const id = Number(route.params.id);
+  const id = Number(route.params.id);
 
-    const reviewResult = await reviewStore.getReviewById(id);
+  const reviewResult = await reviewStore.getReviewById(id);
 
-    if (reviewResult.error) {
-        console.error(reviewResult.error);
-        return;
-    }
+  if (reviewResult.error) {
+    console.error(reviewResult.error);
+    return;
+  }
 
-    review.value = reviewResult.data;
+  review.value = reviewResult.data;
 
-    await bookStore.getBookById(review.value.book_id);
+  await bookStore.getBookById(review.value.book_id);
 });
 
 async function updateReview(data: {
-    rating: number;
-    headline: string;
-    comment: string;
-    spoiler: boolean;
+  rating: number;
+  headline: string;
+  comment: string;
+  spoiler: boolean;
 }) {
-    if (!review.value) {
-        return;
-    }
+  if (!review.value) {
+    return;
+  }
 
-    const result = await reviewStore.updateReview(
-        review.value.id,
-        {
-            book_id: review.value.book_id,
-            user_id: review.value.user_id,
-            rating: data.rating,
-            headline: data.headline,
-            comment: data.comment,
-            spoiler: data.spoiler,
-        },
-    );
+  const result = await reviewStore.updateReview(review.value.id, {
+    book_id: review.value.book_id,
+    user_id: review.value.user_id,
+    rating: data.rating,
+    headline: data.headline,
+    comment: data.comment,
+    spoiler: data.spoiler,
+  });
 
-    if (result.error) {
-        console.error(result.error);
-        return;
-    }
+  if (result.error) {
+    console.error(result.error);
+    return;
+  }
 
-    navigateTo("/student/homepage");
+  navigateTo("/student/home");
 }
 
 function goBack() {
-    navigateTo("/student/homepage");
+  navigateTo("/student/home");
 }
 </script>

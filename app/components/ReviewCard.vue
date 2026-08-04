@@ -1,5 +1,15 @@
 <template>
   <div class="bg-white border border-gray-300 rounded-lg p-6 shadow-sm">
+    <div
+      v-if="review.is_approved === false"
+      class="mt-4 rounded-md border border-red-200 bg-red-50 p-4"
+    >
+      <p class="font-semibold text-red-800">This review was rejected.</p>
+      <p class="mt-1 text-sm text-red-700">
+        It is not visible to other students. You can edit your review and
+        resubmit it for approval.
+      </p>
+    </div>
     <div class="flex justify-between gap-8">
       <div>
         <h2 class="text-2xl font-bold">
