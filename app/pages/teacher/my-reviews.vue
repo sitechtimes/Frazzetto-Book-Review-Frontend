@@ -35,7 +35,7 @@ definePageMeta({
   requiresAuth: true,
   redirectIfAuth: false,
   middleware: "role-check",
-  allowedRoles: ["student"],
+  allowedRoles: ["teacher"],
 });
 
 const userStore = useUserStore();
