@@ -1,6 +1,17 @@
 <template>
   <div class="min-h-screen bg-base-200">
-    <section class="max-w-5xl mx-auto px-10 py-14">
+    <div class="flex justify-center py-6">
+      <div role="tablist" class="tabs tabs-border">
+        <NuxtLink to="/student/home" role="tab" class="tab tab-active">
+          My Reviews
+        </NuxtLink>
+
+        <NuxtLink to="/student/book-submissions" role="tab" class="tab">
+          My Book Submissions
+        </NuxtLink>
+      </div>
+    </div>
+    <section class="max-w-5xl mx-auto px-10 py-10">
       <h1 class="text-4xl font-bold text-center mb-12">My Reviews</h1>
 
       <div v-if="selectedUserReviews.length" class="space-y-6">

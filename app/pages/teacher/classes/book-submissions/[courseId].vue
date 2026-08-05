@@ -98,14 +98,14 @@ const route = useRoute();
 
 const courseStore = useCourseStore();
 const userStore = useUserStore();
-//const submissionStore = useBookSubmissionStore();
+const submissionStore = useBookSubmissionStore();
 
 const course = ref<CourseWithStudents | null>(null);
 
-//const pendingSubmissions = ref<BookSubmission[]>([]);
-//const approvedSubmissions = ref<BookSubmission[]>([]);
-
 const selectedStudentId = ref<number | null>(null);
+
+const { pendingBookSubmissions, approvedBookSubmissions } =
+  storeToRefs(submissionStore);
 
 onMounted(async () => {
   const courseId = Number(route.params.courseId);
@@ -135,26 +135,18 @@ onMounted(async () => {
     students,
   };
 
-  /* const pendingResult = await submissionStore.getPendingSubmissions();
-  const approvedResult = await submissionStore.getApprovedSubmissions();
+  const pendingResult = await submissionStore.getPendingBookSubmissions();
 
   if (pendingResult.error) {
     console.error(pendingResult.error);
     return;
   }
 
+  const approvedResult = await submissionStore.getApprovedBookSubmissions();
+
   if (approvedResult.error) {
     console.error(approvedResult.error);
-    return;
   }
-
-  pendingSubmissions.value = pendingResult.data.filter((submission) =>
-    courseData.students.includes(submission.submitted_by),
-  );
-
-  approvedSubmissions.value = approvedResult.data.filter((submission) =>
-    courseData.students.includes(submission.submitted_by),
-  ); */
 });
 
 const selectedStudent = computed(() => {
@@ -167,25 +159,25 @@ const selectedStudent = computed(() => {
   );
 });
 
-/* const filteredPendingSubmissions = computed(() => {
+const filteredPendingSubmissions = computed(() => {
   if (!selectedStudentId.value) {
-    return pendingSubmissions.value;
+    return pendingBookSubmissions.value;
   }
 
-  return pendingSubmissions.value.filter(
-    (submission) => submission.submitted_by === selectedStudentId.value,
+  return pendingBookSubmissions.value.filter(
+    (submission) => submission.user_id === selectedStudentId.value,
   );
 });
 
 const filteredApprovedSubmissions = computed(() => {
   if (!selectedStudentId.value) {
-    return approvedSubmissions.value;
+    return approvedBookSubmissions.value;
   }
 
-  return approvedSubmissions.value.filter(
-    (submission) => submission.submitted_by === selectedStudentId.value,
+  return approvedBookSubmissions.value.filter(
+    (submission) => submission.user_id === selectedStudentId.value,
   );
-}); */
+});
 
 function selectStudent(studentId: number | null) {
   selectedStudentId.value = studentId;
@@ -205,34 +197,33 @@ function getStudent(userId: number) {
   );
 }
 
-/* async function approveSubmission(submission: BookSubmission) {
-  const { error } = await submissionStore.approveSubmission(submission.id);
+async function approveSubmission(submission: BookSubmission) {
+  const { error } = await submissionStore.approveBookSubmission(
+    submission.id,
+    true,
+  );
 
   if (error) {
-    console.error("Failed to approve submission:", error);
+    console.error(error);
     return;
   }
 
-  pendingSubmissions.value = pendingSubmissions.value.filter(
-    (item) => item.id !== submission.id,
-  );
-
-  approvedSubmissions.value.push({
-    ...submission,
-    status: "approved",
-  });
+  await submissionStore.getPendingBookSubmissions();
+  await submissionStore.getApprovedBookSubmissions();
 }
 
 async function rejectSubmission(submission: BookSubmission) {
-  const { error } = await submissionStore.rejectSubmission(submission.id);
+  const { error } = await submissionStore.approveBookSubmission(
+    submission.id,
+    false,
+  );
 
   if (error) {
-    console.error("Failed to reject submission:", error);
+    console.error(error);
     return;
   }
 
-  pendingSubmissions.value = pendingSubmissions.value.filter(
-    (item) => item.id !== submission.id,
-  );
-} */
+  await submissionStore.getPendingBookSubmissions();
+  await submissionStore.getApprovedBookSubmissions();
+}
 </script>

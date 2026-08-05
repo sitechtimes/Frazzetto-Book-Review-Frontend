@@ -171,7 +171,9 @@ definePageMeta({
 });
 
 const router = useRouter();
+const userStore = useUserStore();
 const bookStore = useBookStore();
+const submissionStore = useBookSubmissionStore();
 
 const { genres } = storeToRefs(bookStore);
 const coverPreview = ref("");
@@ -276,21 +278,35 @@ async function submitBook() {
     }
   }
 
-  const { error } = await bookStore.createBook({
-    title: book.value.title,
-    author: book.value.author,
-    description: book.value.description,
-    genres: selectedGenres,
-    cover_image: coverFile.value,
-  });
+  let error: Error | undefined;
 
-  //add logic here to add book to pending approval if submitted by student
+  if (userStore.user?.is_teacher) {
+    ({ error } = await bookStore.createBook({
+      title: book.value.title,
+      author: book.value.author,
+      description: book.value.description,
+      genres: selectedGenres,
+      cover_image: coverFile.value,
+    }));
+  } else {
+    ({ error } = await submissionStore.submitBook({
+      title: book.value.title,
+      author: book.value.author,
+      description: book.value.description,
+      genres: selectedGenres,
+      cover_image: coverFile.value,
+    }));
+  }
 
   if (error) {
     console.error(error);
     return;
   }
 
-  await router.push("/explore");
+  if (userStore.user?.is_teacher) {
+    await router.push("/explore");
+  } else {
+    await router.push("/student/book-submissions");
+  }
 }
 </script>
