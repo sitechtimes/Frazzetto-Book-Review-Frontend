@@ -194,7 +194,7 @@ export const useBookSubmissionStore = defineStore(
     const approvedBookSubmissions = ref<BookSubmission[]>([]);
     const selectedUserBookSubmissions = ref<BookSubmission[]>([]);
     const selectedBookSubmission = ref<BookSubmission | null>(null);
-
+    //createBook directly adds book, submitBook requests approval first(?)
     async function submitBook(bookData: {
       title: string;
       author: string;
@@ -313,7 +313,7 @@ export const useBookSubmissionStore = defineStore(
       }
 
       const { data, error } = await tryRequestEndpoint<BookSubmission>(
-        `/books/${id}`,
+        `/books/update/${id}`,
         "PUT",
         {
           Authorization: `Bearer ${token.value}`,
@@ -421,7 +421,8 @@ export const useBookSubmissionStore = defineStore(
 
     async function approveBookSubmission(
       id: number,
-      isApproved: boolean,
+      is_approved: boolean,
+      submission: BookSubmission,
     ): Promise<Result<BookSubmission, Error>> {
       const userStore = useUserStore();
       const { token } = storeToRefs(userStore);
@@ -434,7 +435,12 @@ export const useBookSubmissionStore = defineStore(
           "Content-Type": "application/json",
         },
         {
-          is_approved: isApproved,
+          author: submission.author,
+          title: submission.title,
+        description: submission.description,
+        genres: submission.genres.map((genre) => genre.id),
+        cover_image: submission.cover_image,
+          approved: is_approved,
         },
       );
 

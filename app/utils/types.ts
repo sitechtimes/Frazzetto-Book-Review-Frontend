@@ -43,8 +43,7 @@ export interface Review {
 
 export interface BookSubmission extends Book {
   user_id: number;
-  is_approved: boolean;
-  submitted_at: string;
+  approved: boolean;
   approved_at: string | null;
 }
 

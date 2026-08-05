@@ -19,8 +19,13 @@
           <NuxtLink
             :to="`/teacher/classes/book-submissions/${course?.id}`"
             role="tab"
-            class="tab tab-active"
-            >Book Submissions</NuxtLink
+            class="tab tab-active gap-2"
+            >Book Submissions<span
+              v-if="pendingBookSubmissions.length > 0"
+              class="badge badge-error badge-sm"
+            >
+              {{ pendingBookSubmissions.length }}
+            </span></NuxtLink
           >
         </div>
       </div>
@@ -201,6 +206,7 @@ async function approveSubmission(submission: BookSubmission) {
   const { error } = await submissionStore.approveBookSubmission(
     submission.id,
     true,
+    submission,
   );
 
   if (error) {
@@ -216,6 +222,7 @@ async function rejectSubmission(submission: BookSubmission) {
   const { error } = await submissionStore.approveBookSubmission(
     submission.id,
     false,
+    submission,
   );
 
   if (error) {

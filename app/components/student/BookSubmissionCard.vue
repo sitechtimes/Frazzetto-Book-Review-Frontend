@@ -2,7 +2,6 @@
   <div class="card bg-base-100 shadow-md border border-base-300">
     <div class="card-body">
       <div class="flex gap-6">
-        <!-- Cover -->
         <div class="w-28 h-40 bg-gray-200 rounded-lg overflow-hidden shadow">
           <img
             v-if="submission.cover_image"
@@ -19,7 +18,6 @@
           </div>
         </div>
 
-        <!-- Info -->
         <div class="flex-1">
           <div class="flex justify-between items-start">
             <div>
@@ -35,9 +33,9 @@
             <div
               class="badge"
               :class="{
-                'badge-success': submission.is_approved === true,
-                'badge-error': submission.is_approved === false,
-                'badge-warning': submission.is_approved === null,
+                'badge-success': submission.approved === true,
+                'badge-error': submission.approved === false,
+                'badge-warning': submission.approved === null,
               }"
             >
               {{ approvalText }}
@@ -56,19 +54,10 @@
               <span class="font-semibold">Genres:</span>
               {{ genreNames }}
             </p>
-
-            <p v-if="submission.submitted_at">
-              <span class="font-semibold">Submitted:</span>
-              {{ formatDate(submission.submitted_at) }}
-            </p>
           </div>
 
           <div class="card-actions justify-end mt-6">
-            <button
-              v-if="submission.is_approved !== true"
-              class="btn btn-outline"
-              @click="emit('edit', submission)"
-            >
+            <button class="btn btn-outline" @click="emit('edit', submission)">
               Edit
             </button>
 
@@ -82,10 +71,7 @@
         </div>
       </div>
 
-      <div
-        v-if="submission.is_approved === false"
-        class="alert alert-error mt-5"
-      >
+      <div v-if="submission.approved === false" class="alert alert-error mt-5">
         <div>
           <span class="font-semibold">Submission rejected.</span>
           <p class="text-sm mt-1">
@@ -95,7 +81,7 @@
       </div>
 
       <div
-        v-else-if="submission.is_approved === null"
+        v-else-if="submission.approved === null"
         class="alert alert-warning mt-5"
       >
         Your submission is awaiting approval.
@@ -115,11 +101,11 @@ const emit = defineEmits<{
 }>();
 
 const approvalText = computed(() => {
-  if (props.submission.is_approved === true) {
+  if (props.submission.approved === true) {
     return "Approved";
   }
 
-  if (props.submission.is_approved === false) {
+  if (props.submission.approved === false) {
     return "Rejected";
   }
 

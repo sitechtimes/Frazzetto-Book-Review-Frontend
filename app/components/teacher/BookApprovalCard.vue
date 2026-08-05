@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded-xl shadow-md p-6 mb-6">
     <div class="flex gap-6">
-      <div class="w-32 h-48 bg-gray-200 rounded overflow-hidden shrink-0">
+      <div class="w-40 h-60 bg-gray-200 rounded overflow-hidden shrink-0">
         <img
           v-if="submission.cover_image"
           :src="submission.cover_image"
@@ -15,7 +15,14 @@
         </div>
       </div>
 
-      <div class="flex-1">
+      <div class="flex-1 flex flex-col">
+        <div class="flex justify-between items-start mb-3">
+          <p class="text-sm text-gray-500">
+            Submitted by
+            <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+          </p>
+        </div>
+
         <h2 class="text-2xl font-bold">
           {{ submission.title }}
         </h2>
@@ -34,18 +41,19 @@
           </span>
         </div>
 
-        <p class="text-sm text-gray-500">
-          Submitted by
-          <strong> {{ student.first_name }} {{ student.last_name }} </strong>
-        </p>
-
-        <div v-if="showActions" class="flex gap-3 mt-6">
-          <button class="btn btn-success" @click="$emit('approve', submission)">
-            Approve
+        <div v-if="showActions" class="flex justify-end gap-2 mt-auto">
+          <button
+            class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
+            @click="$emit('reject', submission)"
+          >
+            Reject
           </button>
 
-          <button class="btn btn-error" @click="$emit('reject', submission)">
-            Reject
+          <button
+            class="btn btn-sm bg-white border border-gray-300 text-black hover:bg-gray-100"
+            @click="$emit('approve', submission)"
+          >
+            Approve
           </button>
         </div>
       </div>
