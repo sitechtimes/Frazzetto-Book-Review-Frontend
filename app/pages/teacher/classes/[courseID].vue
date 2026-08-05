@@ -121,6 +121,7 @@ const approvedReviews = ref<Review[]>([]);
 const selectedStudentId = ref<number | null>(null);
 
 onMounted(async () => {
+  await userStore.loadSession();
   const courseId = Number(route.params.courseId);
 
   const courseResult = await courseStore.getCourseById(courseId);

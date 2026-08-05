@@ -113,6 +113,7 @@ const { pendingBookSubmissions, approvedBookSubmissions } =
   storeToRefs(submissionStore);
 
 onMounted(async () => {
+  await userStore.loadSession();
   const courseId = Number(route.params.courseId);
 
   const courseResult = await courseStore.getCourseById(courseId);
