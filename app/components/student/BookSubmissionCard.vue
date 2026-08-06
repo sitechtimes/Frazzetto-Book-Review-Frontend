@@ -31,7 +31,7 @@
             </div>
 
             <div
-              class="badge"
+              class="badge badge-outline"
               :class="{
                 'badge-success': submission.approved === true,
                 'badge-error': submission.approved === false,
@@ -71,20 +71,21 @@
         </div>
       </div>
 
-      <div v-if="submission.approved === false" class="alert alert-error mt-5">
-        <div>
-          <span class="font-semibold">Submission rejected.</span>
-          <p class="text-sm mt-1">
-            You can edit your submission and resubmit it for approval.
-          </p>
-        </div>
+      <div
+        v-if="submission.approved === false"
+        class="mt-5 rounded-lg border border-error/40 bg-error/5 p-4 text-error"
+      >
+        <span class="font-semibold">Submission rejected.</span>
+        <p class="mt-1 text-sm text-error/80">
+          You can edit your submission and resubmit it for approval.
+        </p>
       </div>
 
       <div
         v-else-if="submission.approved === null"
-        class="alert alert-warning mt-5"
+        class="mt-5 rounded-lg border border-warning/40 bg-warning/5 p-4 text-warning"
       >
-        Your submission is awaiting approval.
+        <span class="font-medium"> Your submission is awaiting approval. </span>
       </div>
     </div>
   </div>

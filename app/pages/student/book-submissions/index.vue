@@ -28,9 +28,18 @@
         />
       </div>
 
-      <p v-else class="text-center text-gray-500">
-        You haven't submitted any books yet.
-      </p>
+      <div v-else class="flex flex-col items-center gap-4">
+        <p class="text-center text-gray-500">
+          You haven't submitted any books yet.
+        </p>
+
+        <NuxtLink
+          to="/books/add"
+          class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors"
+        >
+          Add a Book
+        </NuxtLink>
+      </div>
     </section>
   </div>
   <ConfirmationModal
