@@ -9,25 +9,12 @@
 
           <p class="text-gray-600">Period {{ course?.period }}</p>
         </div>
-        <div role="tablist" class="tabs tabs-border">
-          <NuxtLink
-            :to="`/teacher/classes/${course?.id}`"
-            role="tab"
-            class="tab"
-            >Reviews</NuxtLink
-          >
-          <NuxtLink
-            :to="`/teacher/classes/book-submissions/${course?.id}`"
-            role="tab"
-            class="tab tab-active gap-2"
-            >Book Submissions<span
-              v-if="pendingBookSubmissions.length > 0"
-              class="badge badge-error badge-sm"
-            >
-              {{ pendingBookSubmissions.length }}
-            </span></NuxtLink
-          >
-        </div>
+        <TeacherClassTabs
+          v-if="course"
+          :course-id="course.id"
+          :student-ids="course.students.map((s) => s.id)"
+          active="submissions"
+        />
       </div>
 
       <div class="flex gap-8">
