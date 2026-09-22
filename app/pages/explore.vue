@@ -59,6 +59,7 @@
       </div>
 
       <NuxtLink
+        v-if="userStore.user?.isLoggedIn"
         to="/books/add"
         class="fixed bottom-10 right-10 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl hover:bg-gray-100 transition"
       >
@@ -71,11 +72,12 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
-  requiresAuth: true,
+  requiresAuth: false,
   redirectIfAuth: false,
 });
 
 const bookStore = useBookStore();
+const userStore = useUserStore();
 
 const search = ref("");
 const sortOption = ref("");
