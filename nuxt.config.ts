@@ -14,4 +14,7 @@ export default defineNuxtConfig({
       backend: "",
     },
   },
+  routeRules: {
+    '/': {redirect: '/explore'},
+  }
 });

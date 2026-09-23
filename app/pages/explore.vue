@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen bg-base-200">
     <main class="max-w-7xl mx-auto px-6 py-12">
+      <NuxtLink to="/login" class="btn mb-6">Log In</NuxtLink>
       <h1 class="text-4xl font-bold text-center mb-10">Explore Books</h1>
 
       <div
@@ -59,7 +60,7 @@
       </div>
 
       <NuxtLink
-        v-if="userStore.user?.isLoggedIn"
+        v-if="userStore.isLoggedIn"
         to="/books/add"
         class="fixed bottom-10 right-10 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl hover:bg-gray-100 transition"
       >
